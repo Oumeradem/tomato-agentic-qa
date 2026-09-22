@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2022", "DOM"],
+    "rootDir": ".",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "types": ["node", "@cucumber/cucumber"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "playwright.config.ts",
+    "cucumber.js",
+    "eslint.config.js",
+    "prettier.config.js"
+  ],
+  "exclude": ["node_modules", "dist", "reports", "screenshots", "videos", "traces"]
+}

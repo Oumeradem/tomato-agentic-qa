@@ -1,0 +1,53 @@
+name: Regression
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  regression:
+    name: Run regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Start demo app
+        run: |
+          npm run demo > /tmp/demo.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -s http://localhost:3100 > /dev/null && break
+            sleep 1
+          done
+
+      - name: Run regression tests
+        env:
+          ENV: qa
+          HEADLESS: 'true'
+          CI: 'true'
+        run: npm run test:regression
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-reports
+          path: |
+            reports/cucumber-report/
+            screenshots/
+            traces/
