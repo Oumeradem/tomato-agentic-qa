@@ -227,7 +227,7 @@ assumptions.
 
 ## 5. Test Generator Agent — Turn Plans into Code
 
-### What it does
+ What it does
 
 The Test Generator takes the Planner's plan and produces working BDD automation:
 
@@ -830,12 +830,3 @@ loops.
 ---
 
 *End of guide. For framework details (config, structure, CI/CD), see `README.md`.*
-
-
-
-
-
-
-
-
-
