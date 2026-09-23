@@ -44,6 +44,37 @@ The agents follow the rules in `.clinerules/` (agent roles, approvals, architect
 standards, Cucumber, environment, Git, locators, Playwright, security). You can paste those rules
 into any AI coding assistant, or let the agents reference the skills automatically.
 
+### How to call a single agent
+
+Each agent is a **Cline agent definition** (`.cline/agents/<name>/<name>-agent.md`). You can call
+any one of them directly — you do not have to run the whole pipeline. Three ways:
+
+**1. Agent mention / agent mode (Cline)** — select the agent in the agent dropdown, or reference
+it in your prompt with `@<name>`:
+
+| Call it with | Definition file |
+| --- | --- |
+| `@planner-agent` | `.cline/agents/planner/planner-agent.md` |
+| `@test-generator-agent` | `.cline/agents/test-generator/test-generator-agent.md` |
+| `@healer-agent` | `.cline/agents/healer/healer-agent.md` |
+| `@branch-agent` / `@commit-agent` / `@push-agent` / `@pr-agent` | `.cline/agents/git/<name>.md` |
+| `@jira-import-agent` | `.cline/agents/jira-import/jira-import-agent.md` |
+| `@jira-status-agent` | `.cline/agents/jira-status/jira-status-agent.md` |
+
+> The only agent with an explicit `name:` frontmatter is the Planner (`planner-agent`); the rest
+> are identified by their folder + file name.
+
+**2. Point the assistant at the definition** — works in any coding assistant:
+
+> "Read `.cline/agents/planner/planner-agent.md` and act as that agent: plan BDD coverage for the
+> Tomato Food Delivery cart flow."
+
+**3. Paste the definition** — attach the agent's markdown file and add your task in business
+language.
+
+Keep the prompt scoped to that agent's job: ask the Planner only to plan, the Healer only to heal,
+the PR agent only to open a PR. Single-agent prompt examples for every agent are in Section 12.
+
 ---
 
 ## 2. How the Agents Work Together
