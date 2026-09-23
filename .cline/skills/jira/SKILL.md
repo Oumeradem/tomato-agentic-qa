@@ -1,31 +1,45 @@
+
+
 ---
 name: jira
-description: Jira import and status-update conventions. Never create duplicates; never mark PASS on a FAIL.
+description: Import BDD scenarios and update issue statuses in Jira via the provided scripts. Always dedupe and dry-run first.
 ---
 
 # Jira Skill
 
-## Purpose
+## Configuration
 
-Sync automation scenarios with Jira test cases, and update status based on the latest report.
+Environment variables: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, `JIRA_ISSUE_TYPE` (default `Bug`).
 
-## When to Use
+## Import failures → Jira bugs
 
-- Jira Import Agent (create test cases).
-- Jira Status Update Agent (update results).
+```bash
+npm run jira:import:dry-run      # preview what would be imported
+npm run jira:import              # create/update bug issues for failed scenarios
+```
 
-## Rules
+- Reads `reports/cucumber-report/cucumber-report.json`.
+- Searches for existing issues by summary before creating — never create duplicates.
+- The Jira Import Agent is the intended caller.
 
-- Config comes from env: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT_KEY`.
-- **Search for duplicates before creating** any Jira issue. If one exists, report it.
-- Create issues only when approved.
-- Base status updates on the latest report only.
-- **Never mark a test PASS if the latest result is FAIL.**
-- Never close or delete issues without approval.
-- Never log credentials or tokens.
+## Update issue status
 
-## Import Checklist
+```bash
+npm run jira:status -- <ISSUE_KEY> <TARGET_STATUS>
+# e.g. npm run jira:status -- QA-123 "In Progress"
+```
 
-- [ ] Duplicate search performed
-- [ ] Preserves feature, scenario, steps, expected results, tags, priority
-- [ ] Approved before creating
+- Uses the issue's available transitions.
+- Never mark a test PASS when the latest automation result is FAIL.
+
+
+
+## Get AC from issues with ticket number
+
+```bash
+npm run jira:status -- <ISSUE_KEY> <TARGET_STATUS>
+# e.g. npm run jira:status -- QA-123 "In Progress"
+```
+
+- Uses the issue's available transitions.
+- Never mark a test PASS when the latest automation result is FAIL.
