@@ -1,11 +1,13 @@
-import { EnvironmentConfig } from '../../types/config';
+import { EnvironmentConfig } from '../../types';
 
 /**
  * QA environment configuration.
- * Replace baseUrl with your QA environment URL.
+ *
+ * The example suite targets the Tomato Food Delivery application
+ * (tomato-food-delivery-zeta.vercel.app). In a real project this would point
+ * to the QA environment of the application under test.
  */
-export const qa: EnvironmentConfig = {
+export const qaConfig: EnvironmentConfig = {
   name: 'qa',
-  baseUrl: 'http://localhost:3100',
-  appTitle: 'Login',
+  baseUrl: 'https://tomato-food-delivery-zeta.vercel.app',
 };

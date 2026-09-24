@@ -1,26 +1,41 @@
-# Workflow: Create Test
+---
+name: create-test
+description: End-to-end BDD creation flow - plan a feature with the Planner Agent, generate the feature file/step definitions/Page Objects with the Test Generator Agent, then run and verify.
+mode: plan
+agents:
+  - planner-agent
+  - test-generator-agent
+---
 
-## Purpose
+# Create Test Workflow
 
-Create a new automated BDD test end-to-end from a requirement.
+Follow this workflow when a user asks to add coverage for a new feature or requirement.
 
-## Steps
+## Step 1 - Plan
 
-1. **Planner Agent** — convert the requirement into a structured test plan (no code yet). Use Playwright MCP to inspect the app when available.
-2. **Test Generator Agent** — read the plan, analyze the existing framework, reuse existing Page Objects/steps, and generate:
-   - Feature file under `features/`
-   - Step definitions under `src/steps/`
-   - Page Objects under `src/pages/` (only when needed)
-3. **Validation** — run the new test: `npm run test:smoke` or a targeted run.
-4. **Report** — confirm the scenario passes; capture failures for the Healer.
+Invoke the **Planner Agent** with the requirement.
 
-## Rules
+- Inspect the live application via the browser to confirm real labels and flows.
+- Produce a structured test plan (features, scenarios, preconditions, tags, priority).
+- Do NOT write implementation code at this stage.
 
-- Search before creating anything new (no duplicates).
-- Follow locator priority and keep steps thin.
-- Never hardcode credentials or URLs.
-- Do not modify unrelated files.
+## Step 2 - Generate
 
-## Output
+Hand the plan to the **Test Generator Agent**.
 
-Feature file + steps + Page Objects + validation result.
+- Reuse existing Page Objects and step definitions wherever possible.
+- Create `features/<area>/<name>.feature` + `src/steps/<name>.steps.ts` + page objects only when needed.
+- Follow the locator rules and step-definition conventions.
+
+## Step 3 - Run and verify
+
+```bash
+npx cucumber-js --tags "@<new-tag-or-feature>"   # run the new coverage
+npm run verify                                    # lint + format + typecheck
+npm run report:cucumber
+```
+
+## Step 4 - Report
+
+- Summarize pass/fail counts and any issues found.
+- Do not commit/push unless explicitly asked.

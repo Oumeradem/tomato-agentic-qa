@@ -1,13 +1,22 @@
-/**
- * Prettier configuration.
- */
+/* eslint-env node */
+/** @type {import('prettier').Config} */
 module.exports = {
-  semi: true,
   singleQuote: true,
   trailingComma: 'all',
-  printWidth: 100,
+  printWidth: 120,
   tabWidth: 2,
-  useTabs: false,
+  semi: true,
   endOfLine: 'lf',
   arrowParens: 'always',
+  overrides: [
+    {
+      // Gherkin files are formatted by convention, not Prettier (also excluded
+      // via .prettierignore). Explicitly disabling the parser keeps Prettier
+      // from attempting to parse them if they are ever passed explicitly.
+      files: ['*.feature'],
+      options: {
+        parser: undefined,
+      },
+    },
+  ],
 };

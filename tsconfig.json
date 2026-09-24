@@ -1,32 +1,27 @@
 {
   "compilerOptions": {
     "target": "ES2022",
+    "lib": ["ES2022"],
     "module": "CommonJS",
-    "moduleResolution": "Node",
-    "lib": ["ES2022", "DOM"],
-    "rootDir": ".",
-    "outDir": "dist",
+    "moduleResolution": "node",
     "strict": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-    "declaration": false,
-    "types": ["node", "@cucumber/cucumber"]
+    "outDir": "dist",
+    "types": ["node"]
   },
-  "include": [
-    "src/**/*.ts",
-    "playwright.config.ts",
-    "cucumber.js",
-    "eslint.config.js",
-    "prettier.config.js"
-  ],
-  "exclude": ["node_modules", "dist", "reports", "screenshots", "videos", "traces"]
+  "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
+  "exclude": ["node_modules", "dist", "reports", "screenshots", "videos", "traces"],
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
 }

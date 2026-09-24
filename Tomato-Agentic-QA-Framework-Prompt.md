@@ -12,39 +12,39 @@ Do not create a toy/demo framework.
 
 Every architectural decision must prioritize:
 
-- Maintainability
-- Readability
-- Scalability
-- Reusability
-- Reliability
-- Debuggability
-- CI/CD compatibility
-- Parallel execution
-- Environment isolation
-- Secure credential management
-- AI-agent compatibility
+* Maintainability
+* Readability
+* Scalability
+* Reusability
+* Reliability
+* Debuggability
+* CI/CD compatibility
+* Parallel execution
+* Environment isolation
+* Secure credential management
+* AI-agent compatibility
 
 ---
 
-# 1. TECHNOLOGY STACK
+ 1.TECHNOLOGY STACK
 
 The framework MUST use:
 
-- Playwright
-- TypeScript
-- Cucumber BDD
-- `@cucumber/cucumber`
-- Allure Report
-- Cucumber HTML/JSON reports
-- Page Object Model
-- Node.js
-- npm
-- dotenv
-- ESLint
-- Prettier
-- Git
-- GitHub Actions
-- Jenkins
+* Playwright
+* TypeScript
+* Cucumber BDD
+* `@cucumber/cucumber`
+* Allure Report
+* Cucumber HTML/JSON reports
+* Page Object Model
+* Node.js
+* npm
+* dotenv
+* ESLint
+* Prettier
+* Git
+* GitHub Actions
+* Jenkins
 
 Use modern, stable versions of the dependencies.
 
@@ -52,7 +52,7 @@ Do not introduce unnecessary libraries.
 
 ---
 
-# 2. ARCHITECTURE
+ 2.ARCHITECTURE
 
 Create a clean enterprise-level architecture similar to:
 
@@ -161,19 +161,19 @@ Do not create unnecessary folders.
 
 ---
 
-# 3. PAGE OBJECT MODEL
+3.PAGE OBJECT MODEL
 
 Implement a proper Page Object Model.
 
 Pages MUST:
 
-- Represent a single application page/component
-- Encapsulate locators
-- Encapsulate page-specific actions
-- Avoid test logic
-- Avoid assertions where possible
-- Be reusable
-- Be readable
+* Represent a single application page/component
+* Encapsulate locators
+* Encapsulate page-specific actions
+* Avoid test logic
+* Avoid assertions where possible
+* Be reusable
+* Be readable
 
 Example conceptual structure:
 
@@ -194,7 +194,7 @@ Do not create a 1,000-line Page Object.
 
 ---
 
-# 4. LOCATOR STRATEGY
+ 4.LOCATOR STRATEGY
 
 This is a CRITICAL RULE.
 
@@ -257,7 +257,7 @@ Locators must survive reasonable UI changes.
 
 ---
 
-# 5. PLAYWRIGHT BEST PRACTICES
+5.PLAYWRIGHT BEST PRACTICES
 
 Use Playwright's built-in capabilities wherever possible.
 
@@ -287,23 +287,24 @@ Prefer Playwright's automatic waiting and explicit expectations.
 Use:
 
 ```typescript
-await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+await expect(page.getByRole('heading', { name: 'Dashboard' }))
+  .toBeVisible();
 ```
 
 Use appropriate:
 
-- Assertions
-- Auto-waiting
-- Network synchronization
-- URL assertions
-- State assertions
-- Trace
-- Screenshot
-- Video when appropriate
+* Assertions
+* Auto-waiting
+* Network synchronization
+* URL assertions
+* State assertions
+* Trace
+* Screenshot
+* Video when appropriate
 
 ---
 
-# 6. CUCUMBER BDD
+ 6.CUCUMBER BDD
 
 Use Gherkin correctly.
 
@@ -331,7 +332,7 @@ BDD should describe WHAT the user does, not HOW the DOM works.
 
 ---
 
-# 7. STEP DEFINITIONS
+7.STEP DEFINITIONS
 
 Step definitions must remain thin.
 
@@ -341,9 +342,9 @@ Bad:
 
 ```typescript
 When('the user logs in', async function () {
-  await this.page.locator('#username').fill('admin');
-  await this.page.locator('#password').fill('password');
-  await this.page.locator('#login').click();
+    await this.page.locator('#username').fill('admin');
+    await this.page.locator('#password').fill('password');
+    await this.page.locator('#login').click();
 });
 ```
 
@@ -351,7 +352,7 @@ Prefer:
 
 ```typescript
 When('the user logs in with valid credentials', async function () {
-  await this.loginPage.loginWithValidCredentials();
+    await this.loginPage.loginWithValidCredentials();
 });
 ```
 
@@ -359,19 +360,19 @@ Business behavior belongs in Page Objects or appropriate service/helper classes.
 
 ---
 
-# 8. CUCUMBER WORLD / CONTEXT
+8.CUCUMBER WORLD / CONTEXT
 
 Create a clean custom Cucumber World.
 
 The World should provide access to:
 
-- Browser
-- BrowserContext
-- Page
-- Page Objects
-- Test metadata
-- Scenario information
-- Environment information
+* Browser
+* BrowserContext
+* Page
+* Page Objects
+* Test metadata
+* Scenario information
+* Environment information
 
 Avoid global mutable state.
 
@@ -379,19 +380,19 @@ Ensure scenarios can run independently.
 
 ---
 
-# 9. TEST ISOLATION
+ 9.TEST ISOLATION
 
 Every scenario MUST be isolated.
 
 A scenario must not depend on:
 
-- Another scenario
-- Another test
-- Execution order
-- Shared browser state
-- Shared cookies
-- Shared local storage
-- Shared mutable data
+* Another scenario
+* Another test
+* Execution order
+* Shared browser state
+* Shared cookies
+* Shared local storage
+* Shared mutable data
 
 Prefer a new BrowserContext per scenario.
 
@@ -417,7 +418,7 @@ Parallel execution must not cause test interference.
 
 ---
 
-# 10. ENVIRONMENT MANAGEMENT
+10.ENVIRONMENT MANAGEMENT
 
 Support multiple environments.
 
@@ -474,7 +475,7 @@ await page.goto(config.baseUrl);
 
 ---
 
-# 11. CREDENTIAL MANAGEMENT
+11.CREDENTIAL MANAGEMENT
 
 Credentials MUST NEVER be hardcoded.
 
@@ -509,52 +510,52 @@ PASSWORD=
 
 Sensitive information must never appear in:
 
-- Source code
-- Feature files
-- Git history
-- Reports
-- Screenshots
-- Logs
-- Agent prompts
+* Source code
+* Feature files
+* Git history
+* Reports
+* Screenshots
+* Logs
+* Agent prompts
 
 If credentials are needed by CI/CD, use:
 
-- GitHub Secrets
-- Jenkins Credentials
+* GitHub Secrets
+* Jenkins Credentials
 
 ---
 
-# 12. CONFIGURATION
+ 12.CONFIGURATION
 
 Centralize configuration.
 
 Create a configuration layer that handles:
 
-- Environment
-- Base URL
-- Credentials
-- Browser
-- Headless/headed mode
-- Timeout
-- Retries
-- Workers
-- Screenshot behavior
-- Video behavior
-- Trace behavior
+* Environment
+* Base URL
+* Credentials
+* Browser
+* Headless/headed mode
+* Timeout
+* Retries
+* Workers
+* Screenshot behavior
+* Video behavior
+* Trace behavior
 
 Do not access `process.env` throughout the application.
 
 Prefer:
 
 ```typescript
-config.username;
-config.baseUrl;
-config.browser;
+config.username
+config.baseUrl
+config.browser
 ```
 
 ---
 
-# 13. BROWSER CONFIGURATION
+13.BROWSER CONFIGURATION
 
 Support at least:
 
@@ -580,7 +581,7 @@ Support CI/headless execution.
 
 ---
 
-# 14. TEST TAGGING
+ 14.TEST TAGGING
 
 Use Cucumber tags.
 
@@ -608,7 +609,7 @@ Do not duplicate feature files just to create different suites.
 
 ---
 
-# 15. REPORTING
+ 15.REPORTING
 
 Implement both:
 
@@ -623,21 +624,21 @@ allure-report/
 
 Capture:
 
-- Scenario name
-- Steps
-- Status
-- Duration
-- Screenshots
-- Trace
-- Error details
-- Environment information
+* Scenario name
+* Steps
+* Status
+* Duration
+* Screenshots
+* Trace
+* Error details
+* Environment information
 
 ## Cucumber Report
 
 Generate:
 
-- HTML
-- JSON
+* HTML
+* JSON
 
 Reports should clearly show:
 
@@ -652,22 +653,22 @@ Error
 
 ---
 
-# 16. FAILURE ARTIFACTS
+16.FAILURE ARTIFACTS
 
 When a test fails, automatically capture appropriate artifacts.
 
 At minimum:
 
-- Screenshot
-- Trace when enabled
-- Error message
-- Scenario name
+* Screenshot
+* Trace when enabled
+* Error message
+* Scenario name
 
 Optionally:
 
-- Video
-- Console logs
-- Network information
+* Video
+* Console logs
+* Network information
 
 Attach useful artifacts to Allure.
 
@@ -675,7 +676,7 @@ Do not generate huge unnecessary artifacts for successful tests unless explicitl
 
 ---
 
-# 17. RETRIES
+17.RETRIES
 
 Retries must be controlled.
 
@@ -704,7 +705,7 @@ Ask the user for help.
 
 ---
 
-# 18. HEALER AGENT
+18.HEALER AGENT
 
 Create a dedicated Healer Agent.
 
@@ -758,18 +759,18 @@ ASK USER FOR HELP
 
 The healer MUST NOT:
 
-- Disable assertions
-- Delete tests
-- Skip tests
-- Add arbitrary waits
-- Replace good locators with XPath unnecessarily
-- Modify unrelated code
-- Hide failures
-- Change requirements
+* Disable assertions
+* Delete tests
+* Skip tests
+* Add arbitrary waits
+* Replace good locators with XPath unnecessarily
+* Modify unrelated code
+* Hide failures
+* Change requirements
 
 ---
 
-# 19. PLANNER AGENT
+19.PLANNER AGENT
 
 Create a Planner Agent.
 
@@ -829,7 +830,7 @@ Tag:
 
 ---
 
-# 20. TEST GENERATOR AGENT
+ 20.TEST GENERATOR AGENT
 
 Create a Test Generator Agent.
 
@@ -868,7 +869,7 @@ Before creating a new Page Object, search for an existing one.
 
 ---
 
-# 21. JIRA IMPORT AGENT
+21.JIRA IMPORT AGENT
 
 Create a Jira Import Agent.
 
@@ -878,14 +879,13 @@ Responsibilities:
 2. Convert scenarios into Jira-compatible test cases
 3. Preserve:
 
-   - Feature
-   - Scenario
-   - Preconditions
-   - Steps
-   - Expected results
-   - Tags
-   - Priority
-
+   * Feature
+   * Scenario
+   * Preconditions
+   * Steps
+   * Expected results
+   * Tags
+   * Priority
 4. Connect to Jira through the configured Jira integration/MCP
 5. Search for duplicates before creating issues
 6. Create Jira test issues only when approved
@@ -905,7 +905,7 @@ Report the existing Jira issue.
 
 ---
 
-# 22. JIRA STATUS UPDATE AGENT
+22.JIRA STATUS UPDATE AGENT
 
 Create a Jira Status Update Agent.
 
@@ -914,10 +914,9 @@ Responsibilities:
 1. Read the latest test report
 2. Identify:
 
-   - Passed scenarios
-   - Failed scenarios
-   - Skipped scenarios
-
+   * Passed scenarios
+   * Failed scenarios
+   * Skipped scenarios
 3. Map scenarios to Jira issues
 4. Update Jira status/result
 5. Add execution information
@@ -930,7 +929,7 @@ Status updates must be based on the latest report.
 
 ---
 
-# 23. GIT AGENT
+ 23.GIT AGENT
 
 Create a Git Agent with sub-agents.
 
@@ -949,8 +948,8 @@ Git Agent
 
 Responsibilities:
 
-- Create branches
-- Follow naming convention
+* Create branches
+* Follow naming convention
 
 Examples:
 
@@ -969,11 +968,11 @@ Never work directly on `main` unless explicitly approved.
 
 Responsibilities:
 
-- Inspect changes
-- Review diff
-- Ensure no secrets are committed
-- Ensure `.env` is ignored
-- Create meaningful commit messages
+* Inspect changes
+* Review diff
+* Ensure no secrets are committed
+* Ensure `.env` is ignored
+* Create meaningful commit messages
 
 Follow Conventional Commits.
 
@@ -1014,19 +1013,19 @@ Before pushing:
 
 Responsibilities:
 
-- Create pull request
-- Generate meaningful title
-- Generate summary
-- List test coverage
-- List important changes
-- Mention known failures
-- Provide validation details
+* Create pull request
+* Generate meaningful title
+* Generate summary
+* List test coverage
+* List important changes
+* Mention known failures
+* Provide validation details
 
 Never merge a PR automatically unless explicitly instructed.
 
 ---
 
-# 24. APPROVAL / SAFETY RULE
+24.APPROVAL / SAFETY RULE
 
 This is a CRITICAL SYSTEM RULE.
 
@@ -1034,18 +1033,18 @@ Agents must NEVER perform destructive operations without explicit user approval.
 
 Destructive operations include:
 
-- Delete files
-- Delete directories
-- Delete tests
-- Remove scenarios
-- Remove Page Objects
-- Reset Git history
-- Force push
-- Delete Git branches
-- Overwrite large portions of the framework
-- Delete Jira issues
-- Close Jira issues
-- Modify production configuration
+* Delete files
+* Delete directories
+* Delete tests
+* Remove scenarios
+* Remove Page Objects
+* Reset Git history
+* Force push
+* Delete Git branches
+* Overwrite large portions of the framework
+* Delete Jira issues
+* Close Jira issues
+* Modify production configuration
 
 If an agent believes deletion is necessary:
 
@@ -1065,7 +1064,7 @@ Do not proceed until approved.
 
 ---
 
-# 25. CHANGE SAFETY
+25.CHANGE SAFETY
 
 Before modifying an existing file:
 
@@ -1082,7 +1081,7 @@ Do not refactor unrelated code during a test-generation task.
 
 ---
 
-# 26. AGENT COMMUNICATION
+ 26.AGENT COMMUNICATION
 
 Agents should operate as specialized roles.
 
@@ -1136,18 +1135,18 @@ Jira Status Update Agent
 
 ---
 
-# 27. SKILLS
+ 27.SKILLS
 
 Create reusable Cline skills.
 
 Each skill should contain:
 
-- Purpose
-- When to use
-- Rules
-- Examples
-- Anti-patterns
-- Validation checklist
+* Purpose
+* When to use
+* Rules
+* Examples
+* Anti-patterns
+* Validation checklist
 
 Required skills:
 
@@ -1168,7 +1167,7 @@ The agents should reference these skills instead of duplicating large amounts of
 
 ---
 
-# 28. .CLINERULES
+28.CLINERULES
 
 Create global rules covering:
 
@@ -1214,7 +1213,7 @@ Human approval requirements.
 
 ---
 
-# 29. TYPESCRIPT QUALITY
+29.TYPESCRIPT QUALITY
 
 Use strict TypeScript.
 
@@ -1223,7 +1222,7 @@ Use strict TypeScript.
 Avoid:
 
 ```typescript
-any;
+any
 ```
 
 unless there is a legitimate reason.
@@ -1250,7 +1249,7 @@ Handle errors appropriately.
 
 ---
 
-# 30. CODE REUSE
+30.CODE REUSE
 
 Before creating anything new, search the repository.
 
@@ -1262,19 +1261,19 @@ Does this already exist?
 
 Reuse:
 
-- Page Objects
-- Components
-- Utilities
-- Steps
-- Fixtures
-- Test data
-- Configuration
+* Page Objects
+* Components
+* Utilities
+* Steps
+* Fixtures
+* Test data
+* Configuration
 
 Do not duplicate functionality.
 
 ---
 
-# 31. TEST DATA
+ 31.TEST DATA
 
 Separate test data from test implementation where appropriate.
 
@@ -1297,24 +1296,24 @@ Generated data must be deterministic when debugging requires it.
 
 ---
 
-# 32. LOGGING
+ 32.LOGGING
 
 Implement useful logging.
 
 Logs should help diagnose:
 
-- Scenario
-- Environment
-- Browser
-- Important actions
-- Failures
-- API/network errors where applicable
+* Scenario
+* Environment
+* Browser
+* Important actions
+* Failures
+* API/network errors where applicable
 
 Do not log passwords, tokens, cookies, or secrets.
 
 ---
 
-# 33. CI/CD
+33.CI/CD
 
 Create:
 
@@ -1352,7 +1351,7 @@ The pipeline should preserve reports even when tests fail.
 
 ---
 
-# 34. NPM SCRIPTS
+ 34.NPM SCRIPTS
 
 Create useful scripts such as:
 
@@ -1380,7 +1379,7 @@ Scripts should be documented in README.
 
 ---
 
-# 35. README
+ 35.README
 
 Create comprehensive documentation.
 
@@ -1413,11 +1412,11 @@ Include:
 
 ---
 
-# 36. AGENT EXECUTION PRINCIPLES
+ 36 AGENT EXECUTION PRINCIPLES
 
 Every agent must:
 
-### Before changing anything
+ Before changing anything
 
 ```text
 Understand
@@ -1429,7 +1428,7 @@ Plan
 Validate assumptions
 ```
 
-### During changes
+ During changes
 
 ```text
 Make smallest reasonable change
@@ -1439,7 +1438,7 @@ Preserve existing functionality
 Follow framework rules
 ```
 
-### After changes
+ After changes
 
 ```text
 Run validation
@@ -1453,7 +1452,7 @@ Never claim a test passes without actually running/validating it when execution 
 
 ---
 
-# 37. HEALING RULE
+37.HEALING RULE
 
 Every agent attempting to fix a problem must follow:
 
@@ -1498,24 +1497,24 @@ Do NOT attempt a fourth fix.
 
 ---
 
-# 38. NO BLIND AUTOMATION
+38.NO BLIND AUTOMATION
 
 Agents must not blindly:
 
-- Generate tests
-- Modify selectors
-- Change assertions
-- Create Jira issues
-- Commit changes
-- Push code
-- Create PRs
-- Delete files
+* Generate tests
+* Modify selectors
+* Change assertions
+* Create Jira issues
+* Commit changes
+* Push code
+* Create PRs
+* Delete files
 
 Agents must inspect the existing repository first.
 
 ---
 
-# 39. FINAL VALIDATION
+ 39.FINAL VALIDATION
 
 After creating the framework, verify:
 
@@ -1555,48 +1554,48 @@ After creating the framework, verify:
 
 ---
 
-# 40. IMPLEMENTATION ORDER
+40.IMPLEMENTATION ORDER
 
 Do NOT create everything randomly.
 
 Follow this order:
 
-### Phase 1 — Analyze
+ Phase 1 — Analyze
 
 Inspect the repository and determine whether an existing project exists.
 
-### Phase 2 — Architecture
+ Phase 2 — Architecture
 
 Create the project structure.
 
-### Phase 3 — Configuration
+ Phase 3 — Configuration
 
 Implement:
 
-- TypeScript
-- Environment management
-- Playwright configuration
-- Cucumber configuration
+* TypeScript
+* Environment management
+* Playwright configuration
+* Cucumber configuration
 
-### Phase 4 — Core Framework
-
-Implement:
-
-- World
-- Hooks
-- Browser lifecycle
-- Page Object base/components
-- Utilities
-
-### Phase 5 — Reporting
+Phase 4 — Core Framework
 
 Implement:
 
-- Allure
-- Cucumber reports
-- Failure artifacts
+* World
+* Hooks
+* Browser lifecycle
+* Page Object base/components
+* Utilities
 
-### Phase 6 — Example Test
+ Phase 5 — Reporting
+
+Implement:
+
+* Allure
+* Cucumber reports
+* Failure artifacts
+
+ Phase 6 — Example Test
 
 Create one complete example:
 
@@ -1614,56 +1613,56 @@ Assertion
 Report
 ```
 
-### Phase 7 — CI/CD
+ Phase 7 — CI/CD
 
 Create:
 
-- GitHub Actions
-- Jenkinsfile
+* GitHub Actions
+* Jenkinsfile
 
-### Phase 8 — Cline Architecture
+ Phase 8 — Cline Architecture
 
 Create:
 
-- `.cline`
-- agents
-- skills
-- workflows
-- `.clinerules`
+* `.cline`
+* agents
+* skills
+* workflows
+* `.clinerules`
 
-### Phase 9 — Jira
+ Phase 9 — Jira
 
 Implement Jira-related agent definitions and integration points.
 
-### Phase 10 — Validation
+ Phase 10 — Validation
 
 Run the framework and fix problems.
 
 ---
 
-# 41. IMPORTANT CONSTRAINTS
+ 41.IMPORTANT CONSTRAINTS
 
 Never:
 
-- Use XPath when a Playwright locator is available
-- Use arbitrary `waitForTimeout`
-- Hardcode credentials
-- Hardcode environment URLs
-- Create duplicated Page Objects
-- Put large logic in step definitions
-- Create dependent scenarios
-- Ignore failed tests
-- Disable assertions to make tests pass
-- Delete anything without approval
-- Modify unrelated files
-- Commit secrets
-- Push without approval
-- Create duplicate Jira tests
-- Attempt healing more than 3 times
+* Use XPath when a Playwright locator is available
+* Use arbitrary `waitForTimeout`
+* Hardcode credentials
+* Hardcode environment URLs
+* Create duplicated Page Objects
+* Put large logic in step definitions
+* Create dependent scenarios
+* Ignore failed tests
+* Disable assertions to make tests pass
+* Delete anything without approval
+* Modify unrelated files
+* Commit secrets
+* Push without approval
+* Create duplicate Jira tests
+* Attempt healing more than 3 times
 
 ---
 
-# 42. EXPECTED RESULT
+ 42.EXPECTED RESULT
 
 At the end, produce a complete production-ready automation framework with:
 

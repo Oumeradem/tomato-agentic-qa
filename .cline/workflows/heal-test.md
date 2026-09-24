@@ -1,28 +1,44 @@
-# Workflow: Heal Test
+---
+name: heal-test
+description: Repair failing tests using the Healer Agent - analyze evidence, apply at most 3 fixes, and escalate to the user if still failing.
+mode: act
+agents:
+  - healer-agent
+---
 
-## Purpose
+# Heal Test Workflow
 
-Diagnose and fix a failing test.
+Follow this workflow when a scenario is failing.
 
-## Steps
+## Step 1 - Reproduce
 
-1. **Healer Agent** — analyze the failed test, error, screenshot, trace, Page Object, and feature file.
-2. Identify the probable root cause.
-3. Apply the smallest fix (max 3 attempts).
-4. Re-run the affected test after each attempt.
-5. Validate the result.
+Run the failing scenario and capture the error:
 
-## Attempt Limit
+```bash
+npx cucumber-js --tags "@<tag>" 2>&1 | tail -40
+```
 
-- Maximum **3 attempts**.
-- After 3 failures, STOP and ask the user for help. Never attempt a 4th fix.
+## Step 2 - Analyze
 
-## Rules
+- Read the error message and failure artifacts in `reports/artifacts/`.
+- Inspect the feature file, step definitions, and Page Object.
+- State the probable root cause before editing.
 
-- Never disable assertions, delete/skip tests, or add arbitrary waits.
-- Never replace good locators with XPath unnecessarily.
-- Never modify unrelated code or change requirements.
+## Step 3 - Apply fix (max 3 attempts)
 
-## Report on Stop
+Invoke the **Healer Agent**. For each attempt:
 
-State the failure, the 3 attempts, and a recommended next action, then ask the user.
+1. Apply a targeted fix.
+2. Re-run the affected scenario.
+3. Stop the moment it passes.
+
+If the scenario still fails after 3 attempts: **STOP and ask the user for help.** Do not keep changing code.
+
+## Step 4 - Validate
+
+```bash
+npm run verify
+npm run report:cucumber
+```
+
+Report the final status honestly — never claim a fix that did not pass.

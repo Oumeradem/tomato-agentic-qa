@@ -1,35 +1,39 @@
 ---
 name: environment-management
-description: Multi-environment configuration conventions for this framework.
+description: Manage multi-environment configuration (dev/qa/stage/prod), credentials via .env, and run the suite against a chosen environment.
 ---
 
 # Environment Management Skill
 
-## Purpose
+## Configuration layer
 
-Manage dev/qa/stage/prod environments and credentials without hardcoding.
+- Central config: `src/config/config.ts` reads `process.env` once via dotenv.
+- Per-environment config: `src/config/environments/{dev,qa,stage,prod}.ts` define `baseUrl` and metadata.
+- Never access `process.env` directly in pages/steps — use the `config` object.
 
-## When to Use
+## Selecting an environment
 
-- Configuring environments, running tests in a specific env, or adding credentials.
+```bash
+ENV=qa npm test
+ENV=stage npm test
+ENV=dev npm test
+```
 
-## Rules
+## Credentials
 
-- Select env with `ENV=qa npm test`.
-- Environment values live in `src/config/environments/*.ts`; merged in `src/config/config.ts`.
-- Never hardcode URLs — use `config.baseUrl`.
-- Credentials come from `.env` via `config.credentials.*`.
-- `.env` is git-ignored; only `.env.example` is committed with placeholders.
-- In CI/CD use GitHub Secrets / Jenkins Credentials.
+- Never hardcode credentials. Put them in local `.env` (git-ignored).
+- `.env.example` holds placeholders and is safe to commit.
+- CI/CD injects real values via GitHub Secrets / Jenkins Credentials (see `scripts/ci/prepare-env.sh`).
 
-## Commands
+## Browser / runtime
 
-- `ENV=qa npm test`
-- `ENV=stage BROWSER=firefox npm test`
-- `HEADLESS=false npm test`
+```bash
+BROWSER=chromium npx cucumber-js
+HEADLESS=false npm run test:headed
+WORKERS=4 npx cucumber-js
+```
 
-## Validation Checklist
+## Safety
 
-- [ ] baseUrl from config, not hardcoded
-- [ ] No credentials in code
-- [ ] .env ignored, .env.example present
+- Run `npm run verify:secrets` to confirm no secrets are tracked by git.
+- Never commit a real `.env`.

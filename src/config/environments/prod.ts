@@ -1,11 +1,7 @@
-import { EnvironmentConfig } from '../../types/config';
+import { EnvironmentConfig } from '../../types';
 
-/**
- * PROD environment configuration.
- * Replace baseUrl with your production environment URL.
- */
-export const prod: EnvironmentConfig = {
+/** Production environment configuration. Replace with the real production URL. */
+export const prodConfig: EnvironmentConfig = {
   name: 'prod',
-  baseUrl: 'http://localhost:3100',
-  appTitle: 'Login',
+  baseUrl: 'https://www.example.com',
 };

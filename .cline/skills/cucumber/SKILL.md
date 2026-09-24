@@ -1,45 +1,33 @@
 ---
 name: cucumber
-description: Gherkin/BDD conventions for this framework — use before writing feature files or steps.
+description: Write correct Gherkin and Cucumber configuration for this framework - feature files, tags, step definitions, and the custom World.
 ---
 
 # Cucumber Skill
 
-## Purpose
+## Feature files
 
-Write business-focused Gherkin and thin step definitions that map to Page Object actions.
+- Location: `features/<area>/<name>.feature`.
+- Gherkin describes business behavior, NOT DOM implementation details.
+- Tags drive suites: `@smoke`, `@sanity`, `@critical`, `@regression`, `@wip`.
+- Scenarios must be independent; never depend on order or shared state.
 
-## When to Use
+## Step definitions
 
-- Creating a feature file or step definition.
+- Location: `src/steps/`.
+- One step definition per semantic action; keep them thin — delegate to Page Objects.
+- Use the shared `CustomWorld` (`this.page`, `this.context`, `this.scenarioContext`) instead of globals.
+- All step files must register with `setDefaultTimeout` and use the world in `this`.
 
-## Rules
+## Running
 
-- Describe WHAT the user does, not HOW the DOM works.
-- Keep step definitions thin — delegate to Page Objects.
-- Use tags for suites: `@smoke`, `@regression`, `@sanity`, `@critical`, `@wip`.
-- One feature file per domain under `features/`.
-- Reuse existing step definitions; avoid near-duplicate wording.
-- Scenarios must be isolated and independent.
-
-## Examples
-
-```gherkin
-@smoke @critical
-Scenario: Successful login with valid credentials
-  Given the user is on the login page
-  When the user logs in with valid credentials
-  Then the dashboard should be displayed
+```bash
+npx cucumber-js                    # full suite
+npm run test:smoke                 # --tags "@smoke"
+npm run test:dry-run               # validate definitions only
 ```
 
-## Anti-patterns
+## Reports
 
-- `When the user clicks the element with id "login-button"`
-- Large automation logic inside a step definition
-
-## Validation Checklist
-
-- [ ] Gherkin describes behavior, not DOM
-- [ ] Steps are thin
-- [ ] Tags applied
-- [ ] No duplicate steps
+- Cucumber HTML/JSON + summary produced by `npm run report:cucumber` (script: `scripts/summarize-cucumber-report.js`).
+- Allure results are produced per-scenario by the reporter.

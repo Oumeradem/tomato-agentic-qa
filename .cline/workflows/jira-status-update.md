@@ -1,21 +1,40 @@
-# Workflow: Jira Status Update
+---
+name: jira-status-update
+description: Update Jira issue statuses/execution results from the latest automation report via the Jira Status Update Agent.
+mode: act
+agents:
+  - jira-status-agent
+---
 
-## Purpose
+# Jira Status Update Workflow
 
-Update Jira issue results based on the latest test report.
+Follow this workflow to sync Jira issue statuses with the latest test results.
 
-## Steps
+## Prerequisites
 
-1. Read the latest test report (`reports/cucumber-report/cucumber-report.json`).
-2. Identify passed, failed, and skipped scenarios.
-3. Map scenarios to Jira issues.
-4. Update status/result for each mapped issue.
-5. Add execution info (timestamp, environment, browser) and failure info when applicable.
-6. Link report information when appropriate.
+Environment configured: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`.
+
+## Step 1 - Ensure a fresh report
+
+```bash
+npx cucumber-js
+npm run report:cucumber
+```
+
+Only the latest report may be used as the source of truth.
+
+## Step 2 - Map and update
+
+Invoke the **Jira Status Update Agent**. It must:
+
+- Read `reports/cucumber-report/cucumber-report.json`.
+- Identify passed/failed/skipped scenarios.
+- Map scenarios to Jira issues (by summary/title).
+- Transition statuses via `scripts/jira/update-status.mjs <KEY> <STATUS>`.
+- Add execution info and failure details where applicable.
 
 ## Rules
 
-- **Never mark a test as PASS if the latest automation result is FAIL.**
-- Base updates on the latest report only.
-- Do not close or delete issues without approval.
-- Credentials from env, never logged.
+- NEVER mark a test PASS when the latest result is FAIL.
+- Base every update on the latest report.
+- Report which issues were updated and which were left unchanged.

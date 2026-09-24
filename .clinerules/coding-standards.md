@@ -1,21 +1,13 @@
 # Coding Standards
 
-## TypeScript
-
-- Use **strict** TypeScript (see `tsconfig.json`).
-- Avoid `any`. Prefer interfaces and type aliases with meaningful names.
-- Use meaningful variable names: `loginPage`, `submitButton` — never `x`, `y`, `temp`.
-- Use `async`/`await` consistently. Never mix raw promise chains where await is clearer.
-- Use `const` by default; use `let` only when reassignment is required.
-
-## Style
-
-- Follow Prettier configuration (`prettier.config.js`).
-- Follow ESLint configuration (`eslint.config.js`).
-- Run `npm run lint`, `npm run format:check`, and `npm run typecheck` before finishing changes.
-
-## Error Handling
-
-- Handle errors explicitly. Do not swallow exceptions silently.
-- Use Playwright's automatic waiting instead of arbitrary sleeps.
-- Do not disable assertions or add `waitForTimeout` to force tests to pass.
+- TypeScript strict mode is enabled; code must pass `npm run typecheck` (`tsc --noEmit`).
+- Use `interface` for object shapes and `type` for unions; prefer readonly fields where possible.
+- Use `override` when overriding a base-class member (`noImplicitOverride`).
+- Methods and fields: `camelCase`; classes/types: `PascalCase`; feature/step files: `kebab-case`.
+- Code must pass `npm run lint` (ESLint) and `npm run format:check` (Prettier).
+- No `any` without justification (warned); avoid non-null assertions.
+- No arbitrary `waitForTimeout` — rely on Playwright auto-waiting and assertions.
+- No hardcoded credentials, URLs, or magic values — use `config`.
+- Keep functions small and single-purpose; name things by intent.
+- Never disable assertions, delete tests, or hide failures to make the suite pass.
+- Run `npm run verify` before finishing any coding task.

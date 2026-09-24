@@ -1,78 +1,109 @@
-import { After, AfterAll, Before, BeforeAll, Status } from '@cucumber/cucumber';
-import { Browser } from '@playwright/test';
-import { World } from '../support/world';
-import { launchBrowser, createContext } from '../support/browser';
+import {
+  After,
+  AfterAll,
+  Before,
+  BeforeAll,
+  ITestCaseHookParameter,
+  Status,
+  setDefaultTimeout,
+} from '@cucumber/cucumber';
+import { Browser, chromium, firefox, webkit } from '@playwright/test';
 import { config } from '../config/config';
-import { captureFailureArtifacts, ScenarioInfo } from '../utils/artifacts';
-import { writeEnvironmentInfo } from '../utils/reporter';
+import { CustomWorld } from '../support/world';
+import { BrowserName } from '../types';
+import { captureFailureArtifacts } from '../utils/artifact-manager';
 import { logger } from '../utils/logger';
-import { LoginPage } from '../pages/login/LoginPage';
-import { DashboardPage } from '../pages/dashboard/DashboardPage';
+
+setDefaultTimeout(config.timeout);
+
+const browserLaunchers: Record<BrowserName, typeof chromium> = {
+  chromium,
+  firefox,
+  webkit,
+};
 
 let browser: Browser | undefined;
 
-BeforeAll(async function (): Promise<void> {
-  writeEnvironmentInfo();
+async function launchBrowser(): Promise<Browser> {
+  const launcher = browserLaunchers[config.browser];
+  if (!launcher) {
+    throw new Error(`Unsupported browser "${config.browser}". Use one of: ${Object.keys(browserLaunchers).join(', ')}`);
+  }
+  logger.info('Launching browser', { browser: config.browser, headless: config.headless });
+  return launcher.launch({ headless: config.headless });
+}
+
+BeforeAll(async (): Promise<void> => {
+  // The Tomato app exposes no data-testid/data-test attributes; locators use
+  // role, label, placeholder, and text. No global test-id attribute is set.
   browser = await launchBrowser();
+  logger.info('Environment loaded', {
+    env: config.env,
+    baseUrl: config.baseUrl,
+    workers: config.workers,
+    retries: config.retries,
+  });
 });
 
-/**
- * Before each scenario:
- *  - create a fresh, isolated BrowserContext (no shared cookies/storage)
- *  - create a page
- *  - initialize page objects
- *  - attach console listener for failure artifacts
- */
-Before(async function (this: World, scenario: ScenarioInfo): Promise<void> {
-  logger.info(`Starting scenario: ${scenario.pickle?.name}`);
+Before(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Promise<void> {
+  const tags = scenario.pickle.tags.map((tag) => tag.name);
+  this.scenario = { name: scenario.pickle.name, tags };
+  this.consoleErrors = [];
 
   if (!browser) {
-    throw new Error('Browser was not initialized in BeforeAll.');
-  }
-  this.context = await createContext(browser);
-
-  if (config.artifacts.trace !== 'off') {
-    await this.context.tracing.start({ screenshots: true, snapshots: true });
+    throw new Error('Browser was not launched in BeforeAll');
   }
 
+  this.context = await browser.newContext({
+    baseURL: config.baseUrl,
+    viewport: { width: 1280, height: 720 },
+  });
   this.page = await this.context.newPage();
-  this.page.setDefaultTimeout(config.timeout.action);
-  this.page.setDefaultNavigationTimeout(config.timeout.navigation);
 
-  // Capture console messages (excluding secrets) for debugging.
-  this.consoleLogs = [];
-  this.page.on('console', (msg) => {
-    const text = msg.text();
-    if (!/pass(word)?|token|cookie|authorization/i.test(text)) {
-      this.consoleLogs.push(`[${msg.type()}] ${text}`);
+  if (config.trace !== 'off') {
+    await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true });
+  }
+
+  this.page.on('console', (message) => {
+    if (message.type() === 'error') {
+      this.consoleErrors.push(message.text());
     }
   });
+  this.page.on('pageerror', (error) => {
+    this.consoleErrors.push(`Page error: ${error.message}`);
+  });
 
-  this.loginPage = new LoginPage(this.page);
-  this.dashboardPage = new DashboardPage(this.page);
+  this.initPageObjects();
+  logger.info('Scenario started', { scenario: this.scenario.name, tags });
 });
 
-/**
- * After each scenario:
- *  - capture failure artifacts if the scenario failed
- *  - close the page and context to release resources and guarantee isolation
- */
-After(async function (this: World, scenario: ScenarioInfo): Promise<void> {
+After(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Promise<void> {
   const status = scenario.result?.status;
+
   if (status === Status.FAILED) {
-    await captureFailureArtifacts(this, scenario);
+    logger.error('Scenario failed', { scenario: this.scenario.name, error: scenario.result?.message });
+    await captureFailureArtifacts(
+      this,
+      this.page,
+      this.context,
+      this.scenario.name,
+      scenario.result?.message,
+      this.consoleErrors,
+    );
   }
 
-  if (this.page) {
-    await this.page.close().catch(() => undefined);
-  }
   if (this.context) {
-    await this.context.close().catch(() => undefined);
+    await this.context.close().catch((error: unknown) => {
+      logger.warn('Failed to close browser context', { error: String(error) });
+    });
   }
+
+  logger.info('Scenario finished', { scenario: this.scenario.name, status });
 });
 
-AfterAll(async function (): Promise<void> {
+AfterAll(async (): Promise<void> => {
   if (browser) {
-    await browser.close().catch(() => undefined);
+    await browser.close();
+    logger.info('Browser closed');
   }
 });

@@ -1,62 +1,72 @@
-const js = require('@eslint/js');
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsParser = require('@typescript-eslint/parser');
-const globals = require('globals');
-const prettier = require('eslint-config-prettier');
+/* eslint-env node */
+const eslint = require('@eslint/js');
+const tseslint = require('typescript-eslint');
 
-module.exports = [
+module.exports = tseslint.config(
   {
     ignores: [
       'node_modules/**',
       'dist/**',
       'reports/**',
-      'screenshots/**',
-      'videos/**',
-      'traces/**',
       'allure-results/**',
       'allure-report/**',
       'playwright-report/**',
-      'test-results/**',
+      'screenshots/**',
+      'videos/**',
+      'traces/**',
       '.env',
-      '.env.*',
-      '!.env.example',
-      'cucumber.js',
-      'playwright.config.ts',
     ],
   },
-  js.configs.recommended,
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.js'],
+    files: ['src/**/*.ts'],
     languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-    },
-  },
-  {
-    files: ['**/*.ts'],
-    languageOptions: {
-      parser: tsParser,
       parserOptions: {
-        ecmaVersion: 2022,
-        sourceType: 'module',
+        projectService: true,
+        tsconfigRootDir: __dirname,
       },
-      globals: {
-        ...globals.node,
-        ...globals.browser,
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tseslint,
     },
     rules: {
-      ...tseslint.configs.recommended.rules,
-      // TypeScript handles undefined variables; ESLint's no-undef is too strict.
-      'no-undef': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
     },
   },
-  prettier,
-];
+  {
+    files: ['scripts/**/*.js', 'cucumber.js', 'eslint.config.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        console: 'readonly',
+        process: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+    },
+  },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        fetch: 'readonly',
+        Buffer: 'readonly',
+        URL: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+    },
+  },
+);

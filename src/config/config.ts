@@ -1,57 +1,81 @@
 import * as dotenv from 'dotenv';
-import * as path from 'path';
-import { AppConfig, BrowserName, EnvironmentName } from '../types/config';
-import { dev } from './environments/dev';
-import { qa } from './environments/qa';
-import { stage } from './environments/stage';
-import { prod } from './environments/prod';
+import { devConfig } from './environments/dev';
+import { qaConfig } from './environments/qa';
+import { stageConfig } from './environments/stage';
+import { prodConfig } from './environments/prod';
+import {
+  AppConfig,
+  BrowserName,
+  EnvironmentConfig,
+  EnvironmentName,
+  ScreenshotMode,
+  TraceMode,
+  VideoMode,
+} from '../types';
 
-// Load environment variables from .env (never committed).
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ quiet: true });
 
-const environmentMap: Record<EnvironmentName, { baseUrl: string; appTitle?: string }> = {
-  dev,
-  qa,
-  stage,
-  prod,
+const environmentConfigs: Record<EnvironmentName, EnvironmentConfig> = {
+  dev: devConfig,
+  qa: qaConfig,
+  stage: stageConfig,
+  prod: prodConfig,
 };
 
-const selectedEnv = (process.env.ENV || 'qa').toLowerCase() as EnvironmentName;
-const envConfig = environmentMap[selectedEnv] ?? qa;
+const supportedBrowsers: readonly BrowserName[] = ['chromium', 'firefox', 'webkit'];
+const supportedScreenshots: readonly ScreenshotMode[] = ['on', 'off', 'only-on-failure'];
+const supportedVideos: readonly VideoMode[] = ['on', 'off', 'retain-on-failure'];
+const supportedTraces: readonly TraceMode[] = ['on', 'off', 'retain-on-failure', 'on-first-retry'];
+
+/** Returns the first non-empty env value or the provided fallback. */
+function readEnv(name: string, fallback: string): string {
+  const value = process.env[name];
+  return value !== undefined && value.trim() !== '' ? value : fallback;
+}
+
+function parseBoolean(value: string | undefined, fallback: boolean): boolean {
+  if (value === undefined || value.trim() === '') return fallback;
+  return value.toLowerCase() === 'true';
+}
+
+function parseNumber(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function oneOf<T extends string>(value: string, allowed: readonly T[], fallback: T): T {
+  return allowed.includes(value as T) ? (value as T) : fallback;
+}
+
+const rawEnv = readEnv('ENV', 'dev').toLowerCase();
+const env: EnvironmentName = Object.prototype.hasOwnProperty.call(environmentConfigs, rawEnv)
+  ? (rawEnv as EnvironmentName)
+  : 'dev';
+const environment = environmentConfigs[env];
+const isCi = process.env.CI !== undefined && process.env.CI !== 'false';
 
 /**
- * Centralized application configuration.
+ * Central, typed configuration object.
  *
- * All environment variables are read here ONLY. The rest of the framework
- * should use `config.*` rather than accessing `process.env` directly.
+ * Consume `config` everywhere instead of touching `process.env` directly.
  */
 export const config: AppConfig = {
-  env: selectedEnv,
-  baseUrl: process.env.BASE_URL || envConfig.baseUrl,
-  credentials: {
-    username: process.env.USERNAME || '',
-    password: process.env.PASSWORD || '',
-  },
-  browser: (process.env.BROWSER || 'chromium') as BrowserName,
-  headless: process.env.HEADLESS !== 'false',
-  timeout: {
-    action: Number(process.env.ACTION_TIMEOUT) || 15000,
-    navigation: Number(process.env.NAVIGATION_TIMEOUT) || 30000,
-    expect: Number(process.env.EXPECT_TIMEOUT) || 15000,
-  },
-  retries: Number(process.env.RETRIES) || (process.env.CI ? 1 : 0),
-  artifacts: {
-    screenshot: 'only-on-failure',
-    video: process.env.VIDEO === 'true' ? 'retain-on-failure' : 'off',
-    trace: process.env.TRACE === 'true' ? 'retain-on-failure' : 'on-first-retry',
-  },
-  jira: {
-    baseUrl: process.env.JIRA_BASE_URL || '',
-    email: process.env.JIRA_EMAIL || '',
-    apiToken: process.env.JIRA_API_TOKEN || '',
-    projectKey: process.env.JIRA_PROJECT_KEY || '',
-  },
+  env,
+  baseUrl: readEnv('BASE_URL', environment.baseUrl),
+  apiBaseUrl: readEnv('API_BASE_URL', environment.apiBaseUrl ?? ''),
+  browser: oneOf(readEnv('BROWSER', 'chromium').toLowerCase(), supportedBrowsers, 'chromium'),
+  headless: parseBoolean(process.env.HEADLESS, true),
+  timeout: parseNumber(process.env.TIMEOUT, 30000),
+  retries:
+    process.env.RETRIES !== undefined && process.env.RETRIES.trim() !== ''
+      ? parseNumber(process.env.RETRIES, 1)
+      : isCi
+        ? 1
+        : 0,
+  workers: parseNumber(process.env.WORKERS, 1),
+  screenshot: oneOf(readEnv('SCREENSHOT', 'only-on-failure').toLowerCase(), supportedScreenshots, 'only-on-failure'),
+  video: oneOf(readEnv('VIDEO', 'off').toLowerCase(), supportedVideos, 'off'),
+  trace: oneOf(readEnv('TRACE', 'on-first-retry').toLowerCase(), supportedTraces, 'on-first-retry'),
+  username: readEnv('USERNAME', ''),
+  password: readEnv('PASSWORD', ''),
 };
-
-export type { BrowserName, EnvironmentName };
-export { selectedEnv as currentEnvironment };

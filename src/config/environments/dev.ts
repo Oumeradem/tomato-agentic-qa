@@ -1,11 +1,12 @@
-import { EnvironmentConfig } from '../../types/config';
+import { EnvironmentConfig } from '../../types';
 
 /**
- * DEV environment configuration.
- * Replace baseUrl with your local development environment URL.
+ * Dev environment configuration.
+ *
+ * The example suite targets the Tomato Food Delivery application
+ * (tomato-food-delivery-zeta.vercel.app) - the application under test.
  */
-export const dev: EnvironmentConfig = {
+export const devConfig: EnvironmentConfig = {
   name: 'dev',
-  baseUrl: 'http://localhost:3100',
-  appTitle: 'Login',
+  baseUrl: 'https://tomato-food-delivery-zeta.vercel.app',
 };

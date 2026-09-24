@@ -1,51 +1,21 @@
 ---
 name: page-object-model
-description: Page Object Model conventions for this framework — use before creating or extending pages.
+description: Follow the Page Object Model conventions of this framework - one page/component per class, encapsulated locators and actions, no assertions or test logic.
 ---
 
 # Page Object Model Skill
 
-## Purpose
+## Conventions
 
-Encapsulate locators and page-specific actions in reusable Page Objects that extend `BasePage`.
-
-## When to Use
-
-- Creating a new page/component class or adding actions to an existing one.
+- `src/pages/BasePage.ts` provides shared helpers (`goto`, `waitForPage`, title, path).
+- Each page class extends `BasePage` and accepts `page` + optional component collaborators.
+- Components live in `src/pages/components/` (e.g. `Header.ts`) and are composed into pages.
+- Locators are public readonly fields; actions are methods; `waitForReady()` confirms the page is ready.
+- Use `override` when overriding a base member (e.g. `waitForReady`).
 
 ## Rules
 
-- Each page represents a single application page or component.
-- Extend `BasePage` (provides `goto`, `gotoPath`, `getTitle`, click/fill helpers).
-- Encapsulate locators as private readonly fields; expose business actions.
-- Keep pages free of test logic and assertions where possible.
-- Prefer composition (small components like `Header`) over monolithic classes.
-- Reuse existing Page Objects — search `src/pages` first.
-
-## Example
-
-```ts
-export class LoginPage extends BasePage {
-  private readonly usernameInput = this.page.getByLabel('Username');
-  private readonly loginButton = this.page.getByRole('button', { name: 'Login' });
-
-  async login(username: string, password: string): Promise<DashboardPage> {
-    await this.fill(this.usernameInput, username);
-    await this.click(this.loginButton);
-    return new DashboardPage(this.page);
-  }
-}
-```
-
-## Anti-patterns
-
-- 1,000-line page classes
-- Assertions embedded deep in a page
-- Duplicated locators across pages
-
-## Validation Checklist
-
-- [ ] Extends BasePage
-- [ ] Locators encapsulated
-- [ ] Business actions, not raw DOM
-- [ ] No duplicate page classes
+- One page/component per file. No 1,000-line Page Objects.
+- Encapsulate locators and page-specific actions. No test logic, no assertions.
+- Prefer composition over inheritance beyond `BasePage`.
+- Never hardcode URLs — use `config.baseUrl` and page paths.

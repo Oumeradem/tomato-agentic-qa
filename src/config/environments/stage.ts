@@ -1,11 +1,7 @@
-import { EnvironmentConfig } from '../../types/config';
+import { EnvironmentConfig } from '../../types';
 
-/**
- * STAGE environment configuration.
- * Replace baseUrl with your staging environment URL.
- */
-export const stage: EnvironmentConfig = {
+/** Stage environment configuration. Replace with the real staging URL. */
+export const stageConfig: EnvironmentConfig = {
   name: 'stage',
-  baseUrl: 'http://localhost:3100',
-  appTitle: 'Login',
+  baseUrl: 'https://stage.example.com',
 };

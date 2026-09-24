@@ -1,23 +1,17 @@
-# Approval Rules (CRITICAL)
+# Approval Rules
 
-Agents must **never** perform destructive operations without explicit user approval.
+Always ask for explicit user approval before:
 
-Destructive operations include:
+- Creating, modifying, or deleting any file outside the task scope.
+- Deleting any file or directory, including tests, reports, or scripts.
+- Committing, pushing, force-pushing, or opening a pull request.
+- Creating Jira issues or changing Jira issue statuses (dry-run first).
+- Disabling, skipping, deleting, or significantly altering an existing test.
+- Running destructive commands (`git reset --hard`, `git clean`, `rm -rf`, package uninstalls).
+- Switching environments with real credentials or pointing tests at `prod`.
 
-- Deleting files, directories, tests, scenarios, or Page Objects
-- Resetting Git history, force-pushing, or deleting branches
-- Overwriting large portions of the framework
-- Deleting or closing Jira issues
-- Modifying production configuration
+Actions that need no approval:
 
-If deletion or a destructive action seems necessary, **STOP** and explain:
-
-1. What will be deleted
-2. Why it is necessary
-3. What will be affected
-
-Do not proceed until the user explicitly approves.
-
-## Healing Limit
-
-- The Healer has a **maximum of 3 attempts**. After 3 failures, stop and ask the user for help. Never attempt a 4th fix.
+- Reading files, searching the codebase, running the suite locally, generating reports.
+- Fixing lint/format/type errors, updating locators, adding step definitions for a requested feature.
+- Running the healing workflow within its 3-attempt limit.

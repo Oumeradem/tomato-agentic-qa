@@ -1,76 +1,120 @@
+// =============================================================================
+// Jenkinsfile - Declarative pipeline for the Playwright + Cucumber BDD framework.
+//
+// Requires the following Jenkins configuration:
+//   * NodeJS plugin with a tool named "node20"
+//   * Credentials (id: "tomato") with username + password (secret text)
+//     containing the test application credentials
+//   * Optional: Allure Jenkins plugin (id: "allure") - report publishing is
+//     skipped gracefully if the plugin is unavailable
+//
+// Triggered via parameters; also installable as a Multibranch Pipeline where
+// TEST_TAG/ENV come from branch or build parameters.
+// =============================================================================
+
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        // Credentials come from Jenkins credentials store, never the repo.
-        ENV = 'qa'
-        HEADLESS = 'true'
-        CI = 'true'
-        // Optional: inject secrets via Jenkins credentials
-        // USERNAME = credentials('username')
-        // PASSWORD = credentials('password')
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    timeout(time: 45, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+
+  parameters {
+    choice(
+      name: 'TEST_TAG',
+      choices: ['all', 'smoke', 'sanity', 'critical', 'regression'],
+      description: 'Cucumber tag filter to run (all = no tag filter)'
+    )
+    choice(
+      name: 'ENV',
+      choices: ['qa', 'dev', 'stage', 'prod'],
+      description: 'Target environment'
+    )
+    string(
+      name: 'WORKERS',
+      defaultValue: '4',
+      description: 'Number of parallel Cucumber workers'
+    )
+  }
+
+  environment {
+    ENV = "${params.ENV}"
+    WORKERS = "${params.WORKERS}"
+    HEADLESS = 'true'
+    TRACE = 'on-first-retry'
+    SCREENSHOT = 'only-on-failure'
+    // Repository root used by the report/artifact steps below.
+    REPORTS_DIR = "${WORKSPACE}/reports"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
     }
 
-    stages {
-        stage('Install') {
-            steps {
-                sh 'npm ci'
-                sh 'npx playwright install --with-deps chromium'
-            }
+    stage('Setup') {
+      steps {
+        nodejs('node20') {
+          sh 'npm ci'
+          sh 'npx playwright install --with-deps chromium'
         }
-
-        stage('Static Checks') {
-            steps {
-                sh 'npm run typecheck'
-                sh 'npm run lint'
-                sh 'npm run format:check'
-            }
-        }
-
-        stage('Start Demo App') {
-            steps {
-                sh '''
-                    npm run demo > /tmp/demo.log 2>&1 &
-                    for i in $(seq 1 30); do
-                        curl -s http://localhost:3100 > /dev/null && break
-                        sleep 1
-                    done
-                '''
-            }
-        }
-
-        stage('Execute Tests') {
-            steps {
-                // Run smoke suite by default; switch tag via parameter if needed.
-                sh 'npm run test:smoke'
-            }
-        }
-
-        stage('Generate Reports') {
-            steps {
-                sh 'npx allure generate reports/allure-results --clean -o reports/allure-report || true'
-            }
-        }
+      }
     }
 
-    post {
-        always {
-            archiveArtifacts artifacts: 'reports/**', fingerprint: true, allowEmptyArchive: true
-            archiveArtifacts artifacts: 'screenshots/**, traces/**', allowEmptyArchive: true
-            junit testResults: 'reports/**/*.xml', allowEmptyResults: true, keepLongStdio: true
-            // Always publish reports even when tests fail.
-            publishHTML([
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: 'reports/cucumber-report',
-                reportFiles: 'cucumber-report.html',
-                reportName: 'Cucumber Report'
-            ])
-            cleanWs()
+    stage('Prepare environment') {
+      steps {
+        withCredentials([
+          usernamePassword(
+            credentialsId: 'tomato',
+            usernameVariable: 'USERNAME',
+            passwordVariable: 'PASSWORD'
+          )
+        ]) {
+          sh 'bash scripts/ci/prepare-env.sh'
         }
-        failure {
-            echo 'Tests failed. See reports and failure artifacts above.'
-        }
+      }
     }
+
+    stage('Run Cucumber suite') {
+      steps {
+        nodejs('node20') {
+          sh 'bash scripts/ci/run-tests.sh "${TEST_TAG}"'
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'reports/cucumber-report/**, reports/allure-results/**', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'reports/artifacts/**', allowEmptyArchive: true, onlyIfSuccessful: false
+
+      // Publish an Allure report if the Allure Jenkins plugin is installed.
+      // Wrapped in a try/catch so the build does not fail on agents without it.
+      script {
+        try {
+          allure([
+            includeProperties: false,
+            jdk: '',
+            properties: [],
+            reportBuildPolicy: 'ALWAYS',
+            results: [[path: 'reports/allure-results']]
+          ])
+        } catch (Exception e) {
+          echo "Allure plugin unavailable - skipping report publish (${e.getMessage()})."
+        }
+      }
+    }
+    success {
+      echo 'Cucumber BDD suite completed successfully.'
+    }
+    failure {
+      echo 'Cucumber BDD suite FAILED - see report artifacts above.'
+    }
+  }
 }

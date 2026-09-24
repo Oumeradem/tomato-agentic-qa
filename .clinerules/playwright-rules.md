@@ -1,12 +1,11 @@
 # Playwright Rules
 
-- Use Playwright's built-in capabilities and automatic waiting.
-- Prefer role/accessibility-based interactions:
-  - `page.getByRole('button', { name: 'Submit' }).click()`
-  - `expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()`
-- **Never** use arbitrary `page.waitForTimeout(...)` without a documented technical reason.
-- Use the custom World (`this.page`, `this.context`) inside step definitions and hooks — never instantiate your own browser in steps.
-- A fresh `BrowserContext` is created per scenario in `src/hooks/hooks.ts` for isolation. Do not share state between scenarios.
-- Failure artifacts (screenshot, trace, console) are captured automatically on failure in `src/utils/artifacts.ts`.
-- Use `config.*` for URLs, credentials, timeouts, and browser settings. Never hardcode them.
-- Ensure locators survive reasonable UI changes (see `locator-rules.md`).
+- Use Playwright's recommended locators and auto-waiting; NEVER arbitrary `waitForTimeout`.
+- Prefer assertions over sleeps: `expect(locator).toBeVisible()`, `toHaveText()`, `toBeEnabled()`.
+- This framework runs via Cucumber library API — the Playwright config is applied in `BeforeAll` (browser launch), not via `playwright.config.ts` run by the test runner.
+- The Tomato app exposes no `data-testid`/`data-test` attributes — do not call `selectors.setTestIdAttribute`; use role/label/placeholder/text locators instead.
+- Create a fresh `BrowserContext` + `Page` per scenario for isolation; close them in `After`.
+- Capture failure artifacts (screenshot, trace, error, console) only on failure — do not generate huge artifacts for passing tests.
+- Traces/screenshots/videos follow `config` settings (`trace`, `screenshot`, `video`).
+- Use `context.tracing` for traces and `page.screenshot({ fullPage: true })` for screenshots.
+- Keep Playwright usage inside Page Objects and steps; assertions belong in steps (soft expectations allowed there), not inside Page Objects.

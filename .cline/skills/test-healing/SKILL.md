@@ -1,41 +1,26 @@
 ---
 name: test-healing
-description: Diagnosis and repair of failing tests. Maximum 3 attempts.
+description: Diagnose and repair failing tests using evidence (screenshots, traces, errors). Maximum of 3 healing attempts, then escalate to the user.
 ---
 
 # Test Healing Skill
 
-## Purpose
+## Evidence-first workflow
 
-Diagnose and fix failing tests reliably without masking real failures.
+1. Reproduce: run the failing scenario (`npx cucumber-js --tags "<tag>"`).
+2. Read the error message and the failure artifacts in `reports/artifacts/`.
+3. Inspect the feature file, step definitions, and Page Object involved.
+4. Form a root-cause hypothesis before editing anything.
 
-## When to Use
+## Common root causes
 
-- A test is failing (Healer Agent).
-
-## Process
-
-1. Analyze the failure and error message.
-2. Inspect the screenshot and trace.
-3. Inspect the relevant Page Object and feature file.
-4. Identify the root cause.
-5. Apply the smallest fix.
-6. Re-run the test.
-7. Validate.
-
-## Attempt Limit
-
-Maximum **3 attempts**. After 3 failures, STOP and ask the user.
+- Locator drift (UI text/attribute changed).
+- Timing/race (resolve with auto-waiting/assertions, never `waitForTimeout`).
+- Environment/data mismatch (config env, credentials, test data).
+- Assertion mismatch (expected value vs. actual UI copy).
 
 ## Rules
 
-- Never disable assertions, delete/skip tests, or add arbitrary waits.
-- Never replace good locators with XPath unnecessarily.
-- Never modify unrelated code or change requirements.
-
-## Validation Checklist
-
-- [ ] Root cause identified
-- [ ] Smallest fix applied
-- [ ] Test re-run and validated
-- [ ] ≤ 3 attempts
+- Max 3 healing attempts — after that, STOP and ask the user for help.
+- Never disable assertions, skip/delete tests, hide failures, or change requirements.
+- Re-run the affected test to validate, then `npm run verify`.

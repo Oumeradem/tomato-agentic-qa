@@ -1,20 +1,44 @@
-# Workflow: Jira Import
+---
+name: jira-import
+description: Import failed scenarios (or BDD scenarios) into Jira as issues after de-duplication, using the Jira Import Agent and the scripts/jira helper.
+mode: act
+agents:
+  - jira-import-agent
+---
 
-## Purpose
+# Jira Import Workflow
 
-Import generated scenarios into Jira as test cases.
+Follow this workflow to reflect automation results or new BDD coverage in Jira.
 
-## Steps
+## Prerequisites
 
-1. Read the generated feature files.
-2. **Search Jira for duplicates first.**
-3. If an equivalent test exists — do NOT create another issue; report the existing issue.
-4. Otherwise, prepare Jira test cases preserving feature, scenario, preconditions, steps, expected results, tags, and priority.
-5. Get explicit approval before creating issues.
-6. Create the issues via the configured Jira integration.
+Environment configured: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`.
 
-## Rules
+## Step 1 - Generate the source data
 
-- Never create duplicate issues blindly.
-- Credentials come from env: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT_KEY`.
-- Never log credentials.
+Run the suite and generate the Cucumber report so failures are available:
+
+```bash
+npx cucumber-js
+npm run report:cucumber
+```
+
+## Step 2 - Preview (mandatory)
+
+```bash
+npm run jira:import:dry-run
+```
+
+Confirm which scenarios would be imported and that none already exist in Jira.
+
+## Step 3 - Import
+
+Invoke the **Jira Import Agent** to create/update issues. It must:
+
+- Search for duplicates before creating (same summary) and skip existing ones.
+- Preserve feature, scenario, preconditions, steps, expected results, tags, priority.
+
+## Step 4 - Report
+
+- List created issue keys and skipped existing issues.
+- Never create duplicates and never fabricate Jira keys.

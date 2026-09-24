@@ -1,48 +1,34 @@
-import { World as CucumberWorld, IWorldOptions } from '@cucumber/cucumber';
+import { IWorldOptions, World, setWorldConstructor } from '@cucumber/cucumber';
 import { Browser, BrowserContext, Page } from '@playwright/test';
-import { setWorldConstructor, setDefaultTimeout } from '@cucumber/cucumber';
-import { config, BrowserName } from '../config/config';
-import { LoginPage } from '../pages/login/LoginPage';
-import { DashboardPage } from '../pages/dashboard/DashboardPage';
-
-/**
- * Raise the default per-step timeout well above Cucumber's 5s default.
- * Steps in this framework perform real UI automation (navigation, waits),
- * so a generous timeout avoids false failures on slower environments.
- * Overridable via STEP_TIMEOUT (ms).
- */
-setDefaultTimeout(Number(process.env.STEP_TIMEOUT) || 60000);
+import { createPageObjects, PageObjects } from '../fixtures/pages';
+import { ScenarioMetadata } from '../types';
 
 /**
  * Custom Cucumber World.
  *
- * Holds the browser session and page objects for a single scenario. A fresh
- * World is created per scenario by Cucumber, which — combined with a fresh
- * BrowserContext created in the Before hook — guarantees test isolation.
+ * Owns the Playwright primitives (browser, context, page), the page objects,
+ * and per-scenario metadata. One instance is created per scenario, so there is
+ * no global mutable state and scenarios stay isolated.
  */
-export class World extends CucumberWorld {
+export class CustomWorld extends World {
   public browser!: Browser;
   public context!: BrowserContext;
   public page!: Page;
 
-  // Browser selection can be overridden per run via --world-parameters.
-  public browserName: BrowserName;
-  public headless: boolean;
+  /** Composed page objects (see src/fixtures/pages.ts). */
+  public pages!: PageObjects;
 
-  // Page objects are initialized in the Before hook.
-  public loginPage!: LoginPage;
-  public dashboardPage!: DashboardPage;
-
-  // Captured console messages for the scenario (used for failure artifacts).
-  public consoleLogs: string[] = [];
+  public scenario: ScenarioMetadata = { name: '', tags: [] };
+  public consoleErrors: string[] = [];
 
   constructor(options: IWorldOptions) {
     super(options);
+  }
 
-    const params = (options.parameters ?? {}) as Record<string, unknown>;
-    this.browserName = (params.browser as BrowserName) || config.browser;
-    this.headless = params.headless !== undefined ? Boolean(params.headless) : config.headless;
+  /** Initializes page objects against the current page. Called in the Before hook. */
+  public initPageObjects(): void {
+    this.pages = createPageObjects(this.page);
   }
 }
 
-setWorldConstructor(World);
+setWorldConstructor(CustomWorld);

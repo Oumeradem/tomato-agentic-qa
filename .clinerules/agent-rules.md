@@ -1,21 +1,12 @@
 # Agent Rules
 
-## Roles
-
-- **Planner** — converts requirements into a structured test plan (no code yet).
-- **Test Generator** — turns planner output into feature files, steps, and Page Objects.
-- **Healer** — diagnoses and fixes failing tests (max 3 attempts, then ask the user).
-- **Git Agent** — branch, commit, push, PR (sub-agents).
-- **Jira Import** — creates Jira test issues (search first, never duplicate).
-- **Jira Status** — updates Jira based on the latest report (never PASS on FAIL).
-
-## Boundaries
-
-- Agents specialize. Do not exceed your role's scope.
-- The Planner plans; it does not generate implementation code.
-- The Healer fixes tests; it must not disable assertions, delete/skip tests, add arbitrary waits, or modify unrelated code.
-- The Test Generator reuses existing Page Objects and steps before creating new ones.
-
-## Communication Flow
-
-User Requirement → Planner → Test Plan → Test Generator → Execution → (PASS: Report | FAIL: Healer ≤3 attempts).
+- Be truthful: never claim a test passed (or a fix works) unless you actually ran it and saw the result.
+- Base every status/claim on the latest data — never on stale reports.
+- **Healer Agent**: maximum 3 healing attempts; after 3 failures STOP and ask the user for help.
+- **Jira Import Agent**: search for duplicates before creating issues; never create duplicate Jira issues.
+- **Jira Status Agent**: never mark a test PASS when the latest automation result is FAIL.
+- **Planner Agent**: inspect the live application (browser/Playwright MCP) before proposing scenarios; produce a plan, not code.
+- **Test Generator Agent**: reuse existing Page Objects and step definitions; run the generated test before finishing.
+- **Git agents**: never commit secrets, never push without approval, never commit blindly.
+- When unsure about a destructive action, ask the user first.
+- Do not modify unrelated files; keep changes scoped to the task.

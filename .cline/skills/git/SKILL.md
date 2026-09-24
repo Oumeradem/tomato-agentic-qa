@@ -1,31 +1,37 @@
 ---
 name: git
-description: Safe Git workflows for the Git Agent sub-agents (branch, commit, push, PR).
+description: Use Git safely in this repository - Conventional Commits, branch naming, never commit secrets or .env, never push without approval.
 ---
 
 # Git Skill
 
-## Purpose
+## Branch naming
 
-Execute safe Git operations: branching, committing, pushing, and PRs.
+```
+feature/<kebab-case>
+bugfix/<kebab-case>
+test/<kebab-case>
+chore/<kebab-case>
+```
 
-## When to Use
+Never work directly on `main` unless explicitly approved.
 
-- Any Git operation (Git Agent).
+## Commits
 
-## Rules
+- Use Conventional Commits: `feat:`, `test:`, `fix:`, `refactor:`, `chore:`, `docs:`.
+- Always `git status` + `git diff` before committing.
+- Stage specific files; never `git add -A` blindly.
+- Never commit `.env` or any real credential — run `npm run verify:secrets` first.
 
-- Follow branch naming: `feature/`, `bugfix/`, `test/`, `chore/`.
-- Never work on `main` without explicit approval.
-- Use Conventional Commits (`feat:`, `fix:`, `test:`, `chore:`, `docs:`).
-- Review `git status` and `git diff` before committing.
-- Never commit secrets; ensure `.env` is ignored.
-- Push and open PRs only after approval.
-- Never force-push or merge without instruction.
+## Push / PR
 
-## Pre-Push Checklist
+- Never push without explicit approval.
+- Never force-push unless explicitly asked.
+- Open PRs only after tests pass and the branch is pushed.
 
-- [ ] Correct branch
-- [ ] Clean status (no secrets/artifacts)
-- [ ] Tests pass where practical
-- [ ] Approved to push
+## Quality gates before committing
+
+```bash
+npm run verify            # lint + format + typecheck
+npm run verify:secrets    # secret scan
+```

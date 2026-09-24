@@ -1,31 +1,28 @@
 ---
 name: test-design
-description: BDD test design techniques — use when planning scenarios.
+description: Design robust, isolated BDD test scenarios - positive/negative/boundary coverage, meaningful tags, independent scenarios, and reusable steps.
 ---
 
 # Test Design Skill
 
-## Purpose
+## Scenario design
 
-Design comprehensive, valuable test scenarios covering happy paths, negatives, boundaries, and validation.
+- Cover happy-path, negative, boundary, and validation cases explicitly.
+- One scenario tests one behavior; keep scenarios short and readable.
+- Never create dependent scenarios — each must run in isolation and in any order.
+- State preconditions in `Given`, actions in `When`, observable outcomes in `Then`.
 
-## When to Use
+## Tagging
 
-- Planning a new feature's test coverage (Planner Agent).
+| Tag           | Purpose                            |
+| ------------- | ---------------------------------- |
+| `@smoke`      | Critical happy paths, fast         |
+| `@sanity`     | Broad sanity coverage after deploy |
+| `@critical`   | High-priority flows                |
+| `@regression` | Deep, slower coverage              |
+| `@wip`        | In-progress, expected to change    |
 
-## Rules
+## Reuse
 
-- Cover: positive, negative, boundary, and validation scenarios.
-- Use the user journey as the source of scenarios.
-- Keep scenarios atomic and independent.
-- Assign a priority (critical/high/medium/low) and a suite tag to each scenario.
-- Identify reusable steps to avoid duplication.
-
-## Scenario Checklist
-
-- [ ] Happy path covered
-- [ ] Negative path covered
-- [ ] Boundary/edge cases covered
-- [ ] Validation covered
-- [ ] Reusable steps identified
-- [ ] Priority + tag assigned
+- Prefer existing steps and Page Objects; search before adding new ones.
+- Business-readable Gherkin over implementation detail.

@@ -1,9 +1,8 @@
-# Tomato Agentic QA
+# Playwright + TypeScript + Cucumber BDD Framework
 
-A production-ready **Playwright + TypeScript + Cucumber BDD** automation framework with **Allure reporting**, **multi-environment support**, **CI/CD pipelines**, and **Cline AI agents** (Planner, Test Generator, Healer, Git, Jira).
+A **production-ready, enterprise-grade UI test automation framework** built with **Playwright**, **TypeScript**, and **Cucumber BDD**, featuring Allure + Cucumber reporting, Page Object Model, multi-environment configuration, CI/CD (GitHub Actions + Jenkins), and an AI-agent toolchain for Cline.
 
-The project is the concrete implementation of the specification in
-[`Tomato-Agentic-QA-Framework-Prompt.md`](./Tomato-Agentic-QA-Framework-Prompt.md).
+The reference application is [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app/) — the application under test used to validate the framework end-to-end.
 
 ---
 
@@ -11,398 +10,326 @@ The project is the concrete implementation of the specification in
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
-- [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
-- [Project Structure](#project-structure)
-- [How It Works](#how-it-works)
 - [Running Tests](#running-tests)
-- [Tagging](#tagging)
-- [Cross-Browser & Modes](#cross-browser--modes)
+- [Test Tags & Suites](#test-tags--suites)
 - [Reporting](#reporting)
 - [Failure Artifacts](#failure-artifacts)
 - [CI/CD](#cicd)
-- [Cline AI Agents](#cline-ai-agents)
+- [Jira Integration](#jira-integration)
+- [Cline AI Agents, Skills & Rules](#cline-ai-agents-skills--rules)
+- [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
-- [Roadmap](#roadmap)
-- [License](#license)
 
 ---
 
 ## Features
 
-- **BDD with Cucumber** (Gherkin `.feature` files) driven by TypeScript step definitions.
-- **Page Object Model (POM)** — clean separation between locators, page actions, and assertions.
-- **Multi-environment** support (`dev`, `qa`, `stage`, `prod`) via a central `config` object.
-- **Cross-browser** — Chromium, Firefox, WebKit.
-- **Allure reporting** (v3 via `allure-cucumberjs`) plus native Cucumber HTML/JSON reports.
-- **Failure artifacts** — screenshots, traces, videos, and page HTML captured on failure.
-- **CI/CD** — GitHub Actions (test / smoke / regression) and a Jenkins pipeline.
-- **AI agents** — Cline agents/skills/workflows for planning, test generation, self-healing, Git, and Jira.
-- **Lint / format / typecheck** — ESLint + Prettier + TypeScript strict validation.
-- **Resilient timeouts** — configurable action/navigation/expect and step timeouts.
-
----
+- **BDD with Cucumber** — human-readable Gherkin features that describe business behavior.
+- **Page Object Model** — one page/component per class; locators and actions encapsulated, composition over inheritance.
+- **Multi-environment** — `dev`, `qa`, `stage`, `prod` configs; switch with `ENV=qa npm test`.
+- **Secure credentials** — secrets live in git-ignored `.env`; CI injects them from GitHub Secrets / Jenkins Credentials.
+- **Allure reporting** — per-scenario steps, status, duration, environment info, and attached failure artifacts.
+- **Cucumber reporting** — HTML + JSON report plus a console summary script.
+- **Failure artifacts** — screenshot, Playwright trace, error message, and console errors captured automatically on failure.
+- **Parallel execution** — Cucumber `parallel` workers with isolated `BrowserContext` per scenario.
+- **Controlled retries** — 1 retry on CI, 0 locally (configurable via `RETRIES`/CI).
+- **Quality gates** — ESLint, Prettier, and strict TypeScript bundled into `npm run verify`.
+- **CI/CD** — GitHub Actions workflows (test, smoke, regression) and a declarative Jenkinsfile.
+- **AI-agent toolchain** — Cline agents (planner, test generator, healer, git, Jira), skills, workflows, and rules.
+- **Jira integration** — import failed scenarios as bugs and update issue statuses via helper scripts.
 
 ## Tech Stack
 
-| Layer          | Technology                                                       |
-| -------------- | ---------------------------------------------------------------- |
-| Language       | TypeScript (strict)                                              |
-| Test runner    | `@cucumber/cucumber` v13 (BDD)                                   |
-| Browser driver | Playwright `@playwright/test` (browser + expect utils)           |
-| Reporting      | `allure-cucumberjs` / `allure-js-commons` + `allure-commandline` |
-| Config         | `dotenv` + typed environment modules                             |
-| CI             | GitHub Actions + Jenkins                                         |
-| Code quality   | ESLint, Prettier                                                 |
+| Layer        | Technology                                            |
+| ------------ | ----------------------------------------------------- |
+| Test runner  | Cucumber (`@cucumber/cucumber` 13.x, library API)     |
+| Automation   | Playwright (`@playwright/test` 1.63.x)                |
+| Language     | TypeScript 5.x (strict)                               |
+| Reporting    | Allure (`allure-cucumberjs` 3.x) + Cucumber HTML/JSON |
+| Config       | `dotenv` + `src/config/config.ts`                     |
+| Code quality | ESLint 10, Prettier 3                                 |
+| CI/CD        | GitHub Actions, Jenkins                               |
+| AI tooling   | Cline agents/skills/workflows/rules                   |
+| Runtime      | Node.js >= 20                                         |
 
 ---
+
+## Architecture
+
+```text
+project-root/
+│
+├── .cline/                      # Cline AI-agent toolchain
+│   ├── agents/                  # git/, planner/, test-generator/, healer/, jira-import/, jira-status/
+│   ├── skills/                  # playwright, cucumber, page-object-model, test-design, test-healing, git, jira, reporting, environment-management
+│   └── workflows/               # create-test, heal-test, jira-import, jira-status-update
+├── .clinerules/                 # architecture, coding-standards, playwright, cucumber, locator, environment, git, agent, security, approval rules
+├── .github/workflows/           # test.yml, smoke.yml, regression.yml
+├── features/                    # Gherkin features, grouped by area
+│   └── login/login.feature
+├── scripts/
+│   ├── ci/                      # prepare-env.sh, run-tests.sh (shared by CI/CD)
+│   ├── jira/                    # import-results.mjs, update-status.mjs
+│   ├── clean-reports.js
+│   ├── summarize-cucumber-report.js
+│   └── verify-secrets.js
+├── src/
+│   ├── pages/                   # Page Object Model
+│   │   ├── BasePage.ts
+│   │   ├── LoginPage.ts
+│   │   ├── InventoryPage.ts
+│   │   └── components/Header.ts
+│   ├── steps/                   # Cucumber step definitions
+│   ├── hooks/                   # BeforeAll/Before/After hooks + browser lifecycle
+│   ├── support/                 # CustomWorld
+│   ├── config/                  # config.ts + environments/{dev,qa,stage,prod}.ts
+│   ├── data/                    # test data builders (Faker)
+│   ├── types/                   # shared types
+│   └── utils/                   # logger, artifact-manager, etc.
+├── reports/                     # generated reports (git-ignored)
+├── .env.example                 # committed template with placeholders
+├── cucumber.js                  # Cucumber configuration
+├── playwright.config.ts         # Playwright options (referenced by the library API)
+├── package.json
+├── tsconfig.json
+├── eslint.config.js
+├── prettier.config.js
+├── Jenkinsfile
+└── README.md
+```
+
+> The flow is always: **Feature file → Step definitions → Page Object → Playwright → Assertion → Report**.
 
 ## Prerequisites
 
-- **Node.js >= 18** (the project targets Node 20/22 in CI; Node 24 works locally).
-- **npm** (or your preferred package manager).
-- **Playwright browsers** (install with `npx playwright install chromium` for the demo; add `firefox`/`webkit` as needed).
-
----
-
-## Installation
-
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Install Playwright browsers
-npx playwright install chromium
-
-# 3. (Optional) Create your local env file from the template
-cp .env.example .env
-```
-
-> `.env` holds **local-only** secrets and is never committed. `.env.example` documents every supported variable.
-
----
+- **Node.js >= 20** (recommend 20 LTS or newer)
+- **npm**
+- Git
 
 ## Quick Start
 
-The repo ships a **self-contained demo app** (`demo/login.html` → `demo/dashboard.html`).
-It accepts the credentials `demo` / `password`.
-
 ```bash
-# 1. Start the demo server (port 3100, see scripts/demo-server.js)
-npm run demo
+# 1. Install dependencies
+npm ci
 
-# 2. In another terminal, run the full suite
-ENV=qa HEADLESS=true npm test
+# 2. Install the Playwright browser (Chromium is the default)
+npx playwright install chromium
+
+# 3. Create your local environment file from the template
+cp .env.example .env
+# ...then fill in USERNAME/PASSWORD (and any overrides) in .env
+
+# 4. Run the full suite
+npm test
+
+# 5. Generate reports
+npm run report:cucumber
+npm run report:allure
 ```
 
-You should see both scenarios of `features/login/login.feature` pass.
+> Tomato has no public demo accounts — register one in the app and store the credentials in `.env` (`USERNAME` / `PASSWORD`), never in code.
 
 ---
 
 ## Configuration
 
-### Environment Variables
+All runtime behavior is driven by environment variables read through `src/config/config.ts` (values can also come from `.env`). The table below lists the most important variables — see `.env.example` for the full set with comments.
 
-All environment variables are read **only** in `src/config/config.ts` and exposed through the
-`config` object — the rest of the framework must use `config.*`, never `process.env` directly.
+| Variable                | Default           | Description                                               |
+| ----------------------- | ----------------- | --------------------------------------------------------- |
+| `ENV`                   | `qa`              | Target environment: `dev` \| `qa` \| `stage` \| `prod`    |
+| `BASE_URL`              | per-env           | Optional override of the environment base URL             |
+| `BROWSER`               | `chromium`        | `chromium` \| `firefox` \| `webkit`                       |
+| `HEADLESS`              | `true`            | Headless mode                                             |
+| `TIMEOUT`               | `30000`           | Playwright action timeout (ms)                            |
+| `WORKERS`               | `1`               | Cucumber parallel workers (1 = sequential)                |
+| `RETRIES`               | CI=1 / local=0    | Scenario retry count                                      |
+| `TRACE`                 | `on-first-retry`  | Playwright trace mode                                     |
+| `SCREENSHOT`            | `only-on-failure` | Screenshot mode                                           |
+| `VIDEO`                 | `off`             | Video mode                                                |
+| `LOG_LEVEL`             | `info`            | Logger verbosity (`debug` \| `info` \| `warn` \| `error`) |
+| `USERNAME` / `PASSWORD` | —                 | Application credentials (never hardcoded)                 |
 
-| Variable                | Default                    | Description                                                |
-| ----------------------- | -------------------------- | ---------------------------------------------------------- |
-| `ENV`                   | `qa`                       | Environment: `dev` \| `qa` \| `stage` \| `prod`            |
-| `BASE_URL`              | per-environment            | Overrides the environment's `baseUrl`                      |
-| `BROWSER`               | `chromium`                 | `chromium` \| `firefox` \| `webkit`                        |
-| `HEADLESS`              | `true`                     | Headless mode (`true`/`false`)                             |
-| `USERNAME` / `PASSWORD` | —                          | Application credentials (from `.env`)                      |
-| `ACTION_TIMEOUT`        | `15000`                    | Action timeout (ms)                                        |
-| `NAVIGATION_TIMEOUT`    | `30000`                    | Navigation timeout (ms)                                    |
-| `EXPECT_TIMEOUT`        | `15000`                    | Assertion / element wait timeout (ms)                      |
-| `STEP_TIMEOUT`          | `60000`                    | Cucumber step timeout (ms, read in `src/support/world.ts`) |
-| `RETRIES`               | `1` in CI, else `0`        | Scenario retry count                                       |
-| `VIDEO` / `TRACE`       | `false` / `on-first-retry` | Failure artifact toggles                                   |
-| `JIRA_*`                | —                          | Jira integration (optional)                                |
+Example:
 
-### Environments
-
-Environment modules live in `src/config/environments/` (`dev`, `qa`, `stage`, `prod`).
-Each exports a typed object (`name`, `baseUrl`, `appTitle`). The demo targets `qa` at
-`http://localhost:3100`.
-
-```ts
-// src/config/environments/qa.ts
-export const qa: EnvironmentConfig = {
-  name: 'qa',
-  baseUrl: 'http://localhost:3100',
-  appTitle: 'Login',
-};
+```bash
+ENV=qa BROWSER=chromium WORKERS=4 npm test
+ENV=stage HEADLESS=false npm run test:headed
 ```
 
----
-
-## Project Structure
-
-```text
-.
-├── cucumber.js                    # Cucumber config: formats, options, world params
-├── playwright.config.ts           # Single source of truth for browser/trace/artifact options
-├── tsconfig.json
-├── eslint.config.js
-├── prettier.config.js
-├── package.json
-├── Jenkinsfile                    # Jenkins pipeline
-├── .github/workflows/             # GitHub Actions: test.yml, smoke.yml, regression.yml
-├── .env / .env.example            # Local env vars (never commit .env)
-├── demo/                          # Self-contained demo app (login.html, dashboard.html)
-├── scripts/
-│   └── demo-server.js             # Static demo server on port 3100
-├── features/
-│   └── login/login.feature        # Gherkin feature files
-├── src/
-│   ├── config/
-│   │   ├── config.ts              # Central config (reads process.env here only)
-│   │   └── environments/          # dev | qa | stage | prod
-│   ├── types/config.ts            # Shared config typings
-│   ├── data/users.ts              # Test data / fixtures
-│   ├── fixtures/index.ts          # Fixture helpers
-│   ├── support/
-│   │   ├── world.ts               # Custom Cucumber World + browser/context/page
-│   │   └── browser.ts             # Browser/context launch helpers
-│   ├── hooks/hooks.ts             # Cucumber Before/After lifecycle + failure artifacts
-│   ├── pages/
-│   │   ├── base/BasePage.ts       # Shared page behaviour (navigation, etc.)
-│   │   ├── components/Header.ts   # Reusable components
-│   │   ├── login/LoginPage.ts
-│   │   └── dashboard/DashboardPage.ts
-│   ├── steps/                     # Cucumber step definitions
-│   │   ├── common.steps.ts
-│   │   └── login.steps.ts
-│   └── utils/
-│       ├── artifacts.ts           # Failure artifact capture
-│       ├── reporter.ts            # Allure environment info
-│       └── logger.ts              # Structured logging
-├── reports/                       # Generated reports (git-ignored)
-└── .cline/                        # Cline AI agents / skills / workflows
-```
-
----
-
-## How It Works
-
-### World & Browser Lifecycle
-
-- A custom **World** (`src/support/world.ts`) holds the active `page`, `context`, and the
-  instantiated page objects. Steps and hooks access them via `this`.
-- **`BeforeAll` / `AfterAll`** in `src/hooks/hooks.ts` launch and close a single browser.
-- **`Before` / `After`** create and dispose a fresh **BrowserContext per scenario** for
-  guaranteed isolation, and capture failure artifacts on failure.
-- `setDefaultTimeout()` (from `@cucumber/cucumber`) sets the step timeout (60s default,
-  overridable via `STEP_TIMEOUT`).
-
-> ⚠️ Never create your own browser inside a step — always use `this.page` / `this.context`
-> from the World (see `.cline/skills/playwright/SKILL.md`).
-
-### Page Object Model
-
-Pages extend `BasePage`, receive the `Page` instance, and encapsulate locators + actions +
-assertions. Example (`DashboardPage`):
-
-```ts
-export class DashboardPage extends BasePage {
-  private readonly heading: Locator;
-  constructor(page: Page) {
-    super(page);
-    this.heading = page.getByRole('heading', { name: 'Dashboard' });
-  }
-  async isLoaded(): Promise<void> {
-    await this.heading.waitFor({ state: 'visible', timeout: config.timeout.expect });
-  }
-}
-```
-
-### Step Definitions
-
-Steps are plain `Given` / `When` / `Then` functions typed against the `World`:
-
-```ts
-Given('the user is on the login page', async function (this: World) {
-  await this.loginPage.goto();
-  await this.loginPage.isLoaded();
-});
-```
-
-### Timeouts
-
-| Timeout          | Key (`config.timeout.*`) | Notes                                               |
-| ---------------- | ------------------------ | --------------------------------------------------- |
-| Action           | `action`                 | Applied to locator actions                          |
-| Navigation       | `navigation`             | Applied to page navigations                         |
-| Expect / element | `expect`                 | Passed explicitly to `locator.waitFor` / assertions |
-| Cucumber step    | `STEP_TIMEOUT`           | Set via `setDefaultTimeout()`                       |
-
-> **Playwright note:** `expect.setDefaultTimeout()` was removed in Playwright 1.63.
-> The framework therefore passes the configured `expect` timeout explicitly to
-> `locator.waitFor({ state: 'visible', timeout: config.timeout.expect })` rather than relying
-> on a global default.
-
----
+Per-environment base URLs and metadata live in `src/config/environments/<env>.ts`.
 
 ## Running Tests
 
+| Command                                                  | Description                                   |
+| -------------------------------------------------------- | --------------------------------------------- |
+| `npm test`                                               | Full suite                                    |
+| `npm run test:smoke`                                     | `--tags "@smoke"`                             |
+| `npm run test:sanity`                                    | `--tags "@sanity"`                            |
+| `npm run test:critical`                                  | `--tags "@critical"`                          |
+| `npm run test:regression`                                | `--tags "@regression"`                        |
+| `npm run test:wip`                                       | `--tags "@wip"`                               |
+| `npm run test:headed`                                    | Headed Chromium (`HEADLESS=false`)            |
+| `npm run test:debug`                                     | Playwright API debug logging (`DEBUG=pw:api`) |
+| `npm run test:dry-run`                                   | Validate step definitions only (no execution) |
+| `npm run test:chromium` / `test:firefox` / `test:webkit` | Browser-specific runs                         |
+
+## Test Tags & Suites
+
+Features use Cucumber tags so one feature file serves multiple suites — no duplicated files:
+
+| Tag           | Purpose                       |
+| ------------- | ----------------------------- |
+| `@smoke`      | Fast, critical happy paths    |
+| `@sanity`     | Broad sanity after a deploy   |
+| `@critical`   | High-priority flows           |
+| `@regression` | Deep, slower coverage         |
+| `@wip`        | Work in progress (may change) |
+
+Run a custom tag directly:
+
 ```bash
-# Full suite (defaults: ENV=qa, chromium, headless)
-npm test
-
-# Tag-filtered suites
-npm run test:smoke        # @smoke
-npm run test:regression   # @regression
-npm run test:sanity       # @sanity
-npm run test:critical     # @critical
-
-# Headed / debug
-npm run test:headed
-npm run test:debug        # DEBUG=pw:api
-
-# Cross-browser
-npm run test:chromium
-npm run test:firefox
-npm run test:webkit
-
-# Code quality
-npm run lint
-npm run format
-npm run typecheck
+npx cucumber-js --tags "@smoke and @critical"
 ```
-
----
-
-## Tagging
-
-Scenarios can be tagged with any of `@smoke`, `@regression`, `@sanity`, `@critical` (or custom
-tags) to be selected by the matching npm script or CI job. Example from
-`features/login/login.feature`:
-
-```gherkin
-@smoke @critical
-Scenario: Successful login with valid credentials
-  Given the user is on the login page
-  When the user logs in with valid credentials
-  Then the dashboard should be displayed
-```
-
----
-
-## Cross-Browser & Modes
-
-- Browser is selected via `BROWSER` env or the `--world-parameters` npm scripts.
-- `HEADLESS=true|false` toggles headed mode.
-- `playwright.config.ts` keeps a single source of truth for viewport, trace, screenshot, and
-  video options and is read by supporting tooling. Cucumber drives the actual run.
 
 ---
 
 ## Reporting
 
-### Allure
+### Cucumber report
+
+`npm run report:cucumber` produces:
+
+- `reports/cucumber-report/cucumber-report.html` — browsable HTML report
+- `reports/cucumber-report/cucumber-report.json` — machine-readable JSON
+- Console summary (scenario/step pass-fail counts) via `scripts/summarize-cucumber-report.js`
+
+### Allure report
 
 ```bash
-# Generate + open the Allure report
-npm run report:allure
+npm run report:allure           # generate reports/allure-report/
+npm run report:allure:open      # open it in a browser
 ```
 
-- Raw results are written to `reports/allure-results/` (configured via `formatOptions.resultsDir`
-  in `cucumber.js`).
-- The HTML report is generated into `reports/allure-report/`.
-- Environment info (OS, Node version, env, browser, headless) is attached automatically via
-  `formatOptions.environmentInfo`.
+Allure captures per scenario: steps, status, duration, environment info, and failure artifacts.
 
-### Cucumber
+> Note: Allure results are generated live during the run by `allure-cucumberjs/reporter` into `reports/allure-results/`; generation itself just renders the static report.
 
-Native HTML and JSON reports are written during each run:
+### Cleaning
 
-- `reports/cucumber-report/cucumber-report.html`
-- `reports/cucumber-report/cucumber-report.json`
-
----
+```bash
+npm run report:clean            # wipe reports/ (allure + cucumber + artifacts)
+```
 
 ## Failure Artifacts
 
-On a failed scenario, the `After` hook (`src/hooks/hooks.ts` → `src/utils/artifacts.ts`)
-captures and attaches to Allure:
+When a scenario fails, `src/utils/artifact-manager.ts` automatically captures and attaches:
 
-- **Screenshot** (PNG)
-- **Page HTML**
-- **Trace** (`on-first-retry` by default; enable fully via `TRACE=true`)
-- **Video** (enable via `VIDEO=true`)
+- **Screenshot** — `reports/artifacts/<scenario>.png`
+- **Trace** — `reports/artifacts/<scenario>.zip` (when `TRACE` is enabled)
+- **Error message** — `reports/artifacts/error-message.txt`
+- **Console errors** — `reports/artifacts/console-errors.txt`
 
-Artifacts are also written to `screenshots/` and `traces/` for inspection.
-
----
+Artifacts are attached to the report via `World#attach`, so the Allure report includes them automatically.
 
 ## CI/CD
 
-### GitHub Actions (`.github/workflows/`)
+### GitHub Actions
 
-| Workflow         | Trigger              | Runs                      |
-| ---------------- | -------------------- | ------------------------- |
-| `test.yml`       | PRs + pushes to main | Full suite (chromium)     |
-| `smoke.yml`      | PRs (fast feedback)  | `npm run test:smoke`      |
-| `regression.yml` | Nightly / schedule   | `npm run test:regression` |
+| Workflow   | File                               | Triggers                             |
+| ---------- | ---------------------------------- | ------------------------------------ |
+| Test Suite | `.github/workflows/test.yml`       | push/PR to `main`, manual dispatch   |
+| Smoke      | `.github/workflows/smoke.yml`      | push/PR to `main`, manual dispatch   |
+| Regression | `.github/workflows/regression.yml` | manual dispatch, nightly (02:00 UTC) |
 
-Each workflow installs Node, dependencies, Playwright browsers, starts the demo server, runs
-the relevant suite, and uploads Allure + Cucumber reports as artifacts. All workflows use port
-**3100** for the demo server.
+Required repository secrets: `ENV`, `BASE_URL`, `TEST_USERNAME`, `TEST_PASSWORD` (optional repository variables: `WORKERS`, `BROWSER`, `TRACE`).
 
-### Jenkins (`Jenkinsfile`)
+The `test` workflow also runs a `quality` job (`npm run verify`). Reports are uploaded as build artifacts (`cucumber-report`, `allure-report`).
 
-A declarative pipeline that mirrors the GitHub Actions flow: `checkout → setup → lint/typecheck
-→ start demo → test → publish reports` and archives the reports.
+### Jenkins
 
----
+`Jenkinsfile` is a declarative pipeline with parameters:
 
-## Cline AI Agents
+- `TEST_TAG` — `all`, `smoke`, `sanity`, `critical`, `regression`
+- `ENV` — `qa`, `dev`, `stage`, `prod`
+- `WORKERS`
 
-This project includes ready-to-use **Cline** AI agent definitions (`.cline/agents/`), skills
-(`.cline/skills/`), and workflows (`.cline/workflows/`):
+Requirements: NodeJS plugin (tool `node20`) and a Jenkins credential `tomato` (username/password) with the application credentials. The optional Allure plugin is detected at runtime — if absent, the pipeline archives the report instead of failing.
 
-| Agent                         | Purpose                                        |
-| ----------------------------- | ---------------------------------------------- |
-| `planner`                     | Plans test coverage from requirements/features |
-| `test-generator`              | Generates Gherkin features + step definitions  |
-| `healer`                      | Self-heals flaky locators/tests                |
-| `git`                         | Commits, branches, and manages the repo        |
-| `jira-import` / `jira-status` | Syncs results with Jira                        |
+Both CI systems share `scripts/ci/prepare-env.sh` and `scripts/ci/run-tests.sh` so behaviour is identical everywhere.
 
-Skills codify the framework's conventions (Playwright, Page Object Model, locator strategy,
-Cucumber, test design, test healing, reporting, environment management, Git, Jira) so AI
-assistants produce code consistent with this codebase.
+## Jira Integration
+
+Two helper scripts (Node 18+, no dependencies) back the Jira agents:
+
+```bash
+# Import failed scenarios from the Cucumber JSON report as Jira bugs
+npm run jira:import:dry-run      # preview first (mandatory)
+npm run jira:import              # create/update issues (dedupes by summary)
 
 ---
+
+## Cline AI Agents, Skills & Rules
+
+This repository ships a complete Cline toolchain to let AI agents plan, generate, heal, run, and report on tests safely.
+
+### Agents (`.cline/agents/`)
+
+| Agent                  | Responsibility                                                              |
+|------------------------|-----------------------------------------------------------------------------|
+| `planner/planner-agent`      | Converts requirements into structured BDD test plans; inspects the live UI first |
+| `test-generator/test-generator-agent` | Turns plans into feature files, step definitions, and Page Objects (reusing existing ones) |
+| `healer/healer-agent`        | Diagnoses and fixes failing tests — max 3 attempts, then escalates        |
+| `git/commit-agent`           | Reviews diffs, blocks secrets, creates Conventional Commits                |
+| `git/branch-agent`           | Creates correctly named branches; never works on `main` unapproved         |
+| `git/push-agent`             | Pushes only with explicit approval                                         |
+| `git/pr-agent`               | Drafts pull requests with real test results and report links               |
+| `jira-import/jira-import-agent` | Imports BDD scenarios into Jira after de-duplication                     |
+| `jira-status/jira-status-agent` | Syncs Jira statuses from the latest report (never PASS on FAIL)          |
+
+### Skills (`.cline/skills/`)
+
+`playwright`, `cucumber`, `page-object-model`, `test-design`, `test-healing`, `git`, `jira`, `reporting`, `environment-management`.
+
+### Workflows (`.cline/workflows/`)
+
+- `create-test.md` — plan → generate → run → verify
+- `heal-test.md` — reproduce → analyze → fix (max 3) → validate
+- `jira-import.md` — dry-run first, then import
+- `jira-status-update.md` — update statuses from the latest report
+
+### Rules (`.clinerules/`)
+
+`architecture`, `coding-standards`, `playwright-rules`, `cucumber-rules`, `locator-rules`, `environment-rules`, `git-rules`, `agent-rules`, `security-rules`, `approval-rules`.
+
+## Best Practices
+
+- **Locators**: role → label → placeholder → text → `data-test` → stable CSS → XPath (last resort). The framework registers `data-test` as the Playwright test-id attribute because the reference app uses `data-test`, not `data-testid`.
+- **No arbitrary waits** — rely on Playwright auto-waiting and assertions.
+- **Isolation** — a fresh `BrowserContext`/`Page` per scenario; scenarios never depend on each other.
+- **Step definitions are thin** — business logic lives in Page Objects.
+- **Secrets** — only in `.env`/CI secret stores; run `npm run verify:secrets` before committing.
+- **Quality gate** — run `npm run verify` before finishing any task.
 
 ## Troubleshooting
 
-- **`EADDRINUSE` / port 3000 occupied** — the demo server runs on port **3100** on purpose so it
-  never collides with a local app on 3000. See `scripts/demo-server.js`.
-- **`allure` command not found** — run via `npx allure ...` or `npm run report:allure`
-  (the `allure-commandline` devDependency provides the binary).
-- **Allure results missing** — ensure the format is `allure-cucumberjs/reporter` (with the
-  `/reporter` suffix) in `cucumber.js`.
-- **Step timeout** — the Cucumber v13 config key `defaultTimeout` is invalid; the step timeout is
-  set with `setDefaultTimeout()` in `src/support/world.ts`.
-- **Assertions timing out** — increase `EXPECT_TIMEOUT` or use `locator.waitFor(...)` with an
-  explicit timeout in the page objects.
+| Symptom                                | Likely fix                                                        |
+|----------------------------------------|-------------------------------------------------------------------|
+| `getByTestId` can't find elements      | The app may use `data-test` (registered globally). Use `data-test` attributes. |
+| Tests fail only in CI                   | Credentials missing — add GitHub Secrets / Jenkins Credentials and run `prepare-env`. |
+| `npx playwright install` needed         | Install the browser for the machine: `npx playwright install chromium`. |
+| Allure CLI unknown syntax error         | Use the new syntax: `allure generate ./reports/allure-results --output ./reports/allure-report` (the `report:allure` script already does). |
+| Parallel flakiness                       | Lower `WORKERS`, ensure scenarios are isolated (fresh context per scenario). |
+| Step ambiguous                           | Two step definitions match the same text — consolidate with parameterized steps. |
+| Secrets flagged by `verify:secrets`      | Remove the real value or add a precise ignore in `scripts/verify-secrets.js`. |
 
----
 
-## Roadmap
+# Update an issue's status via its available transitions
+npm run jira:status -- QA-123 "In Progress"
+```
 
-- Expand the demo app and feature coverage (checkout, registration, etc.).
-- Add Jira TestOps / Allure TestOps publishing.
-- Add Dockerized test execution for parity across environments.
-- Add per-browser matrix jobs to CI.
-
----
-
-## License
-
-UNLICENSED — private project.
+Environment: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, optional `JIRA_ISSUE_TYPE` (default `Bug`).

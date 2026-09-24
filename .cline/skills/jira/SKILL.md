@@ -1,5 +1,3 @@
-
-
 ---
 name: jira
 description: Import BDD scenarios and update issue statuses in Jira via the provided scripts. Always dedupe and dry-run first.
@@ -23,18 +21,6 @@ npm run jira:import              # create/update bug issues for failed scenarios
 - The Jira Import Agent is the intended caller.
 
 ## Update issue status
-
-```bash
-npm run jira:status -- <ISSUE_KEY> <TARGET_STATUS>
-# e.g. npm run jira:status -- QA-123 "In Progress"
-```
-
-- Uses the issue's available transitions.
-- Never mark a test PASS when the latest automation result is FAIL.
-
-
-
-## Get AC from issues with ticket number
 
 ```bash
 npm run jira:status -- <ISSUE_KEY> <TARGET_STATUS>

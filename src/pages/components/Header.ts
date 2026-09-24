@@ -1,26 +1,25 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator } from '@playwright/test';
+import { BaseComponent } from './BaseComponent';
 
 /**
- * Example reusable header component.
- *
- * Components encapsulate a portion of the UI (e.g. a header, navigation bar
- * or modal) and are composed into pages. This keeps page objects small.
+ * The Tomato Food Delivery header (`.navbar`), present on every page.
+ * Contains the logo, primary navigation links, the cart link (`/cart`), and
+ * the "Sign In" button that opens the login modal. Cart state is client-side,
+ * so navigation to the cart must go through this link (SPA), not a hard reload.
  */
-export class Header {
-  private readonly page: Page;
-  private readonly userMenu: Locator;
+export class Header extends BaseComponent {
+  public readonly cartLink: Locator = this.page.getByRole('link', { name: 'Cart' });
+  public readonly signInButton: Locator = this.page.getByRole('button', { name: 'Sign In' });
 
-  constructor(page: Page) {
-    this.page = page;
-    this.userMenu = page.getByTestId('user-menu');
+  public constructor(page: Header['page']) {
+    super(page, page.locator('.navbar'));
   }
 
-  async openUserMenu(): Promise<void> {
-    await this.userMenu.click();
+  public async openCart(): Promise<void> {
+    await this.cartLink.click();
   }
 
-  async logout(): Promise<void> {
-    await this.openUserMenu();
-    await this.page.getByRole('menuitem', { name: 'Logout' }).click();
+  public async openSignIn(): Promise<void> {
+    await this.signInButton.click();
   }
 }

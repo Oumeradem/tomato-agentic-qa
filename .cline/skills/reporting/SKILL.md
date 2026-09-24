@@ -1,34 +1,33 @@
 ---
 name: reporting
-description: Allure and Cucumber reporting conventions for this framework.
+description: Generate and inspect the framework's reports - Cucumber HTML/JSON summary and Allure report - and read failure artifacts.
 ---
 
 # Reporting Skill
 
-## Purpose
-
-Produce and interpret Allure and Cucumber HTML/JSON reports, and capture failure artifacts.
-
-## When to Use
-
-- Analyzing test results or generating reports.
-
-## Rules
-
-- Allure results → `reports/allure-results`; generate HTML via `npm run report:allure`.
-- Cucumber JSON + HTML → `reports/cucumber-report` (generated during the run).
-- Failure artifacts (screenshot, trace, console, error) are attached to Allure automatically on failure.
-- Environment info is written to `environment.properties` at the start of a run.
-- Do not generate huge artifacts for passing tests unless configured.
-
 ## Commands
 
-- `npm run report:allure`
-- `npm run report:cucumber`
+```bash
+npm run report:clean         # wipe reports/ (allure + cucumber)
+npm run report:cucumber      # Cucumber HTML/JSON + console summary
+npm run report:allure        # generate Allure report (allure-report/)
+npm run report:allure:open   # open the Allure report in a browser
+```
 
-## Validation Checklist
+## What each report shows
 
-- [ ] allure-results generated
-- [ ] cucumber JSON + HTML generated
-- [ ] environment.properties present
-- [ ] Failure artifacts attached on failure
+- **Cucumber** (`reports/cucumber-report/`): feature → scenario → step status, duration, error; plus a console summary from `scripts/summarize-cucumber-report.js`.
+- **Allure** (`reports/allure-report/`): per-scenario steps, status, duration, environment info, and attached failure artifacts (screenshot, trace, error, console).
+
+## Failure artifacts
+
+- Written to `reports/artifacts/` on failure: `<scenario>.png`, `<scenario>.zip` (trace), `error-message.txt`, `console-errors.txt`.
+- Attached automatically to the Allure report via `World#attach`.
+
+## Validate a report
+
+Always confirm the JSON report exists and parse cleanly before sharing results:
+
+```bash
+node -e "JSON.parse(require('fs').readFileSync('reports/cucumber-report/cucumber-report.json','utf8')); console.log('valid')"
+```
