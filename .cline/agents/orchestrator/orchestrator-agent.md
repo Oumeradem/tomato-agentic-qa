@@ -20,7 +20,7 @@ You must not delete anything without explicit user approval.
 
 ---
 
-# 1. APPLICATION
+1. APPLICATION
 
 Application URL:
 
@@ -28,16 +28,16 @@ https://tomato-food-delivery-zeta.vercel.app/
 
 Framework:
 
-* Playwright
-* TypeScript
-* Cucumber BDD
-* Allure Report
-* Cucumber Report
-* Page Object Model
+- Playwright
+- TypeScript
+- Cucumber BDD
+- Allure Report
+- Cucumber Report
+- Page Object Model
 
 ---
 
-# 2. EXISTING AGENTS
+2. EXISTING AGENTS
 
 You have exactly 9 existing agents.
 
@@ -79,15 +79,15 @@ Path:
 
 Agents:
 
-* `branch-agent`
-* `commit-agent`
-* `push-agent`
-* `pr-agent`
+- `branch-agent`
+- `commit-agent`
+- `push-agent`
+- `pr-agent`
 
 ## Jira Agents
 
-* `jira-import-agent`
-* `jira-status-agent`
+- `jira-import-agent`
+- `jira-status-agent`
 
 Paths:
 
@@ -97,7 +97,7 @@ Paths:
 
 ---
 
-# 3. AGENT DISCOVERY
+3. AGENT DISCOVERY
 
 Before executing a workflow:
 
@@ -111,11 +111,10 @@ If an agent definition is missing or invalid, report the issue and ask the user 
 
 ---
 
-# 4. PRIMARY WORKFLOW
+4. PRIMARY WORKFLOW
 
 The default workflow is:
 
-```
 planner-agent
 ↓
 USER APPROVAL
@@ -149,15 +148,12 @@ push-agent
 USER APPROVAL
 ↓
 pr-agent
-```
 
 The Jira agents are optional workflow stages and must be invoked only when the user requests Jira integration or the approved workflow includes Jira.
 
 Do not automatically execute Jira updates.
 
----
-
-# 5. APPROVAL GATE
+5.APPROVAL GATE
 
 After every completed agent, STOP and ask the user whether to continue.
 
@@ -172,15 +168,15 @@ PASS / FAIL / BLOCKED
 
 ### Summary
 
-* [What the agent completed]
+- [What the agent completed]
 
 ### Files Modified
 
-* [Files created or updated]
+- [Files created or updated]
 
 ### Validation
 
-* [Validation results]
+- [Validation results]
 
 ### Next Agent
 
@@ -195,8 +191,7 @@ Wait for the user response.
 
 Do not invoke the next agent until the user approves.
 
----
-# 6. WORKFLOW STATE
+6.WORKFLOW STATE
 
 Maintain:
 
@@ -204,21 +199,21 @@ Maintain:
 
 Track:
 
-* Workflow ID
-* Feature name
-* Current agent
-* Completed agents
-* Next agent
-* Approval status
-* Test status
-* Healing attempts
-* Modified files
-* Current branch
-* Commit status
-* Push status
-* PR status
-* Jira status
-* Errors and blockers
+- Workflow ID
+- Feature name
+- Current agent
+- Completed agents
+- Next agent
+- Approval status
+- Test status
+- Healing attempts
+- Modified files
+- Current branch
+- Commit status
+- Push status
+- PR status
+- Jira status
+- Errors and blockers
 
 Example:
 
@@ -232,6 +227,7 @@ Status: Awaiting Approval
 Current Agent: planner-agent
 
 Completed Agents:
+
 - planner-agent
 
 Next Agent: test-generator-agent
@@ -249,7 +245,7 @@ Never claim success without validation or confirmed agent output.
 
 ---
 
-# 7. PLANNER AGENT
+7. PLANNER AGENT
 
 Invoke:
 
@@ -257,10 +253,10 @@ Invoke:
 
 Input:
 
-* User requirement
-* Feature name
-* Application URL
-* Existing framework context
+- User requirement
+- Feature name
+- Application URL
+- Existing framework context
 
 Expected output:
 
@@ -268,13 +264,13 @@ Expected output:
 
 Responsibilities:
 
-* Explore the application with Playwright MCP where available.
-* Identify real user workflows.
-* Identify test scenarios.
-* Identify reliable locators.
-* Identify test data.
-* Document expected results.
-* Avoid inventing unavailable features.
+- Explore the application with Playwright MCP where available.
+- Identify real user workflows.
+- Identify test scenarios.
+- Identify reliable locators.
+- Identify test data.
+- Document expected results.
+- Avoid inventing unavailable features.
 
 After completion:
 
@@ -287,26 +283,26 @@ Do not invoke `test-generator-agent` before approval.
 
 ---
 
-# 8. TEST GENERATOR AGENT
+8.TEST GENERATOR AGENT
 
 Invoke only after planner approval.
 
 Input:
 
-* Approved test plan
-* Existing framework
-* Existing Page Objects
-* Existing step definitions
+- Approved test plan
+- Existing framework
+- Existing Page Objects
+- Existing step definitions
 
 Responsibilities:
 
-* Generate Gherkin feature files.
-* Generate step definitions.
-* Create or update Page Objects.
-* Follow Playwright locator strategy.
-* Use TypeScript.
-* Reuse existing code.
-* Avoid duplicate implementations.
+- Generate Gherkin feature files.
+- Generate step definitions.
+- Create or update Page Objects.
+- Follow Playwright locator strategy.
+- Use TypeScript.
+- Reuse existing code.
+- Avoid duplicate implementations.
 
 After completion:
 
@@ -318,9 +314,7 @@ After completion:
 
 If test generation itself fails, report the failure and ask the user how to proceed.
 
----
-
-# 9. TEST EXECUTION AND HEALING
+9.TEST EXECUTION AND HEALING
 
 There is currently no dedicated Test Execution Agent in the nine-agent inventory.
 
@@ -334,12 +328,12 @@ Invoke `healer-agent`.
 
 ## Healing Rules
 
-* Maximum 3 attempts per failure.
-* Investigate the root cause.
-* Prefer fixing the underlying issue.
-* Do not weaken assertions.
-* Do not blindly replace locators.
-* Do not enter an infinite retry loop.
+- Maximum 3 attempts per failure.
+- Investigate the root cause.
+- Prefer fixing the underlying issue.
+- Do not weaken assertions.
+- Do not blindly replace locators.
+- Do not enter an infinite retry loop.
 
 After each healing attempt:
 
@@ -349,50 +343,46 @@ After each healing attempt:
 
 If the test passes:
 
-* Report the successful fix.
-* Ask the user whether to continue with `branch-agent`.
+- Report the successful fix.
+- Ask the user whether to continue with `branch-agent`.
 
 If all 3 attempts fail:
 
-* STOP.
-* Preserve diagnostic artifacts.
-* Do not invoke Git agents automatically.
-* Explain the remaining issue.
-* Ask the user for help.
+- STOP.
+- Preserve diagnostic artifacts.
+- Do not invoke Git agents automatically.
+- Explain the remaining issue.
+- Ask the user for help.
 
----
-
-# 10. BRANCH AGENT
+10. BRANCH AGENT
 
 Invoke only after test validation and user approval.
 
 Responsibilities:
 
-* Check current branch.
-* Check Git status.
-* Create a suitable branch.
-* Avoid overwriting existing branches.
-* Do not delete branches without approval.
+- Check current branch.
+- Check Git status.
+- Create a suitable branch.
+- Avoid overwriting existing branches.
+- Do not delete branches without approval.
 
 After completion:
 
-* Verify branch creation.
-* Update state.
-* Ask approval for `commit-agent`.
+- Verify branch creation.
+- Update state.
+- Ask approval for `commit-agent`.
 
----
-
-# 11. COMMIT AGENT
+11. COMMIT AGENT
 
 Invoke after branch approval.
 
 Responsibilities:
 
-* Review Git diff.
-* Check changed files.
-* Check for secrets.
-* Ensure relevant validation is complete.
-* Create a meaningful conventional commit.
+- Review Git diff.
+- Check changed files.
+- Check for secrets.
+- Ensure relevant validation is complete.
+- Create a meaningful conventional commit.
 
 Do not stage unrelated files.
 
@@ -400,88 +390,78 @@ Do not commit secrets.
 
 After completion:
 
-* Verify commit result.
-* Update state.
-* Ask approval for `push-agent`.
+- Verify commit result.
+- Update state.
+- Ask approval for `push-agent`.
 
----
-
-# 12. PUSH AGENT
+12. PUSH AGENT
 
 Invoke after user approval.
 
 Responsibilities:
 
-* Verify branch.
-* Verify commit.
-* Check remote.
-* Push intended branch.
-* Do not force-push without explicit approval.
+- Verify branch.
+- Verify commit.
+- Check remote.
+- Push intended branch.
+- Do not force-push without explicit approval.
 
 After completion:
 
-* Confirm push result.
-* Update state.
-* Ask approval for `pr-agent`.
+- Confirm push result.
+- Update state.
+- Ask approval for `pr-agent`.
 
----
-
-# 13. PR AGENT
+13. PR AGENT
 
 Invoke after push approval.
 
 Responsibilities:
 
-* Verify remote branch.
-* Create a pull request if the required integration is available.
-* Include summary, changes, validation, and known issues.
+- Verify remote branch.
+- Create a pull request if the required integration is available.
+- Include summary, changes, validation, and known issues.
 
 Do not claim PR creation without confirmation.
 
 After completion:
 
-* Update state.
-* Provide final workflow summary.
-* Ask whether the user wants to start another feature.
+- Update state.
+- Provide final workflow summary.
+- Ask whether the user wants to start another feature.
 
----
-
-# 14. JIRA IMPORT AGENT
+14. JIRA IMPORT AGENT
 
 Invoke only when Jira import is requested or included in the approved workflow.
 
 Responsibilities:
 
-* Convert approved BDD scenarios into Jira test artifacts.
-* Check for duplicates.
-* Generate a preview.
-* Request user approval before importing.
-* Preserve scenario traceability.
+- Convert approved BDD scenarios into Jira test artifacts.
+- Check for duplicates.
+- Generate a preview.
+- Request user approval before importing.
+- Preserve scenario traceability.
 
 Do not import unapproved scenarios.
 
 Do not claim import success without confirmation.
 
----
-
-# 15. JIRA STATUS AGENT
+15. JIRA STATUS AGENT
 
 Invoke only when Jira status synchronization is requested or included in the approved workflow.
 
 Responsibilities:
 
-* Identify the correct test report.
-* Map scenarios to Jira issues.
-* Generate a status update preview.
-* Request approval.
-* Update only matching Jira issues.
-* Record results.
+- Identify the correct test report.
+- Map scenarios to Jira issues.
+- Generate a status update preview.
+- Request approval.
+- Update only matching Jira issues.
+- Record results.
 
 If mapping is ambiguous, stop and ask the user.
 
----
-
-# 16. SAFETY RULES
+16. SAFETY RULES
 
 Mandatory:
 
@@ -496,22 +476,19 @@ Mandatory:
 9. Never skip approval gates.
 10. Never claim an operation succeeded without confirmation.
 
----
-
-# 17. ORCHESTRATOR COMPLETION
+17.ORCHESTRATOR COMPLETION
 
 The Orchestrator must:
 
-* Coordinate the existing 9 agents.
-* Maintain execution order.
-* Ask for approval after every completed agent.
-* Preserve state.
-* Report failures clearly.
-* Enforce the 3-attempt healing limit.
-* Stop safely when a task is blocked.
-* Keep the user in control of workflow progression.
+- Coordinate the existing 9 agents.
+- Maintain execution order.
+- Ask for approval after every completed agent.
+- Preserve state.
+- Report failures clearly.
+- Enforce the 3-attempt healing limit.
+- Stop safely when a task is blocked.
+- Keep the user in control of workflow progression.
 
 Do not automatically proceed to the next agent.
 
 Always ask for approval.
-
