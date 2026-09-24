@@ -9,4 +9,5 @@ import { EnvironmentConfig } from '../../types';
 export const devConfig: EnvironmentConfig = {
   name: 'dev',
   baseUrl: 'https://tomato-food-delivery-zeta.vercel.app',
+  apiBaseUrl: 'https://food-del-backend-api-croo.onrender.com',
 };

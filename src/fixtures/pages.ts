@@ -23,13 +23,20 @@ import { Page } from '@playwright/test';
  *     return { header, homePage: new HomePage(page, header) };
  *   }
  */
-// Intentionally empty until the first page object is added to the project.
-/* eslint-disable-next-line @typescript-eslint/no-empty-object-type */
+import { LoginPage } from '../pages/LoginPage';
+import { Header } from '../pages/components/Header';
+import { SignUpModal } from '../pages/components/SignUpModal';
+
 export interface PageObjects {
-  // readonly homePage: HomePage;
+  readonly loginPage: LoginPage;
+  readonly signUpModal: SignUpModal;
 }
 
 /** Composes the page objects for a fresh page (dependency injection / fixture). */
-export function createPageObjects(_page: Page): PageObjects {
-  return {};
+export function createPageObjects(page: Page): PageObjects {
+  const header = new Header(page);
+  return {
+    loginPage: new LoginPage(page, header),
+    signUpModal: new SignUpModal(page),
+  };
 }
