@@ -163,7 +163,7 @@ The app has no dedicated login page. The **Sign In** button in the header opens 
 
 **Example prompts:**
 
-> Plan BDD test coverage for the Tomato Food Delivery sign-in flow at https://tomato-food-delivery-zeta.vercel.app/.
+> Plan BDD test coverage for the Tomato Food Delivery sign-in flow at <https://tomato-food-delivery-zeta.vercel.app/>.
 >
 > I need tests for the Tomato menu and cart. Plan the scenarios, preconditions, tags, and priorities.
 >
@@ -384,8 +384,8 @@ test: add Tomato login scenarios
 - Tomato LoginPage page object with role/label locators
 ```
 
-5. Stages only the intended files (`git add <files>`), never `git add -A` blindly.
-6. Commits and confirms the result.
+1. Stages only the intended files (`git add <files>`), never `git add -A` blindly.
+2. Commits and confirms the result.
 
 > Run `npm run verify` and `npm run verify:secrets` **before** asking it to commit — it checks the diff too, but a clean working tree helps.
 
@@ -494,7 +494,7 @@ Skills are reusable playbooks the agents consult to follow this framework's conv
 | `git`                    | Branch naming, Conventional Commits, secret blocking, push/PR approval gates                                                          | "Prepare a commit for the Tomato login tests following the git skill."                      |
 | `jira`                   | Import flow (dry-run first, dedupe) and status updates (latest report only)                                                           | "Import the Tomato scenarios using the jira skill."                                         |
 | `reporting`              | Generating/inspecting Cucumber + Allure reports, reading failure artifacts                                                            | "Summarize the latest run using the reporting skill."                                       |
-| `environment-management` | `ENV=dev                                                                                                                              | qa                                                                                          | stage | prod`, `.env` credentials, browser/runtime overrides, secrets check | "Set up the framework to run against Tomato using the environment-management skill." |
+| `environment-management` | `ENV=dev                                                                                                                              | qa                                                                                          | stage | prod`,`.env` credentials, browser/runtime overrides, secrets check | "Set up the framework to run against Tomato using the environment-management skill." |
 
 **Key commands the skills reference:**
 
@@ -523,18 +523,20 @@ Use when you have a new requirement to cover (e.g. _"I want the Tomato sign-in f
 
 **Example kick-off:**
 
-> Add automated coverage for signing in to Tomato at https://tomato-food-delivery-zeta.vercel.app/.
+> Add automated coverage for signing in to Tomato at <https://tomato-food-delivery-zeta.vercel.app/>.
 
 **Steps the workflow runs:**
 
 1. **Plan** — the Planner Agent inspects the live Tomato home page, confirms the sign-in modal (header "Sign In" button, "Your email"/"Password" fields, "Login" submit), and produces the test plan (positive, negative, validation scenarios, tags, priorities). No code.
 2. **Generate** — you approve the plan; the Test Generator Agent reuses existing steps/Page Objects, creates `features/login.feature`, thin step definitions, and a Tomato `LoginPage`.
 3. **Run & verify:**
+
    ```bash
    npx cucumber-js --tags "@smoke"   # or @sanity
    npm run verify                    # lint + format + typecheck
    npm run report:cucumber
    ```
+
 4. **Report** — the agent summarizes pass/fail counts and any issues. Nothing is committed unless you explicitly ask.
 
 ### 7.2 `heal-test` — repair a failing scenario

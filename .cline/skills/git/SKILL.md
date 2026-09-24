@@ -7,7 +7,7 @@ description: Use Git safely in this repository - Conventional Commits, branch na
 
 ## Branch naming
 
-```
+```text
 feature/<kebab-case>
 bugfix/<kebab-case>
 test/<kebab-case>
