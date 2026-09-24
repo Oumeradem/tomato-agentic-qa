@@ -26,10 +26,14 @@ import { Page } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { Header } from '../pages/components/Header';
 import { SignUpModal } from '../pages/components/SignUpModal';
+import { MenuPage } from '../pages/MenuPage';
+import { CartPage } from '../pages/CartPage';
 
 export interface PageObjects {
   readonly loginPage: LoginPage;
   readonly signUpModal: SignUpModal;
+  readonly menuPage: MenuPage;
+  readonly cartPage: CartPage;
 }
 
 /** Composes the page objects for a fresh page (dependency injection / fixture). */
@@ -38,5 +42,7 @@ export function createPageObjects(page: Page): PageObjects {
   return {
     loginPage: new LoginPage(page, header),
     signUpModal: new SignUpModal(page),
+    menuPage: new MenuPage(page),
+    cartPage: new CartPage(page),
   };
 }
