@@ -17,6 +17,18 @@ import { config } from '../config/config';
  */
 const NOODLE_DISHES: readonly string[] = ['Buttter Noodles', 'Veg Noodles', 'Somen Noodles', 'Cooked Noodles'];
 
+/** Category labels rendered under the "Explore our menu" section. */
+const MENU_CATEGORIES: readonly string[] = [
+  'Salad',
+  'Rolls',
+  'Deserts',
+  'Sandwich',
+  'Cake',
+  'Pure Veg',
+  'Pasta',
+  'Noodles',
+];
+
 /** Alt text of images inside a dish card that are not the dish itself. */
 const CONTROL_IMAGE_ALTS = new Set(['Add to cart', 'Add one', 'Remove one', 'Rating']);
 
@@ -96,5 +108,35 @@ export class MenuPage extends BasePage {
   /** The exact dish names the app renders under the "Noodles" category. */
   public get noodleDishes(): readonly string[] {
     return NOODLE_DISHES;
+  }
+
+  /** The hero "View Menu" button that scrolls to the explore-menu section. */
+  public get viewMenuButton(): Locator {
+    return this.page.getByRole('button', { name: 'View Menu' });
+  }
+
+  /** The hero heading above the "View Menu" button. */
+  public get heroHeading(): Locator {
+    return this.page.getByRole('heading', { name: 'Order your favourite food here' });
+  }
+
+  /** The "Explore our menu" section heading. */
+  public get exploreMenuHeading(): Locator {
+    return this.page.getByRole('heading', { name: 'Explore our menu' });
+  }
+
+  /** Clicks the hero "View Menu" button. */
+  public async clickViewMenu(): Promise<void> {
+    await this.viewMenuButton.click();
+  }
+
+  /** The exact category labels rendered under the explore-menu section. */
+  public get menuCategories(): readonly string[] {
+    return MENU_CATEGORIES;
+  }
+
+  /** A menu category label inside the explore-menu section (e.g. "Salad"). */
+  public menuCategory(category: string): Locator {
+    return this.exploreMenuHeading.locator('..').getByText(category, { exact: true });
   }
 }

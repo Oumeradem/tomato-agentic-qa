@@ -1,36 +1,36 @@
 # Orchestrator State
 
-Workflow: Header Navigation Tabs
+Workflow: View Menu Button (create-test)
 
-Status: Completed
+Status: Test execution complete — PASS
 
-Current Agent: (none)
+Current Agent: test-execution-agent
 
-Completed Agents: planner-agent, test-generator-agent, healer-agent (1 fix), commit-agent, push-agent
+Completed Agents: planner-agent, test-generator-agent, test-execution-agent
 
-Next Agent: (none)
+Next Agent: branch-agent (awaiting approval)
 
-Approval Required: false
+Approval Required: true (approve git stage)
 
-Test Status: PASSED — 31/31 scenarios, 204/204 steps, 0 failures (full suite)
+Test Status: PASSED — 4/4 scenarios, 20/20 steps, 0 failures (@view-menu)
 
-Healing Attempts: 1
+Healing Attempts: 0
 
 Modified Files:
-.cline/plans/header-tabs-plan.md (created)
-features/navigation/header.feature (created)
-src/steps/header.steps.ts (created)
-src/pages/components/Header.ts (added nav locators + fixed root locator)
-src/fixtures/pages.ts (exposed header in PageObjects)
+.cline/plans/view-menu-plan.md (created)
+features/navigation/view-menu.feature (created)
+src/steps/view-menu.steps.ts (created)
+src/pages/MenuPage.ts (added viewMenuButton / heroHeading / exploreMenuHeading / menuCategory + clickViewMenu / MENU_CATEGORIES)
 
 Current Branch: chore/clean-fresh-start
 
-Commit Status: committed — b970c18
+Commit Status: not committed
 
-Push Status: pushed (in sync, 0 ahead/behind)
+Push Status: not pushed
 
-PR Status: PR #1 auto-updated
+PR Status: PR #1 open (chore/clean-fresh-start)
 
 Jira Status: not applicable
 
-Errors and Blockers:
+Errors and Blockers: none
+
