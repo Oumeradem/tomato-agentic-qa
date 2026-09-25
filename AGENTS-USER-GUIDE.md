@@ -372,7 +372,7 @@ The four git agents keep `main` clean and make every commit safe and reviewable.
 **Process:**
 
 1. Runs `git status` and `git diff` to inspect exactly what changed.
-2. Blocks anything unsafe: real credentials, `.env`, `reports/`, `allure-results/`, `screenshots/`, `videos/`, `traces/`, `dist/`, debug leftovers.
+2. Blocks anything unsafe: real credentials, `.env`, `reports/`, `allure-results/`, `dist/`, debug leftovers.
 3. If anything unsafe is present, it **stops and asks you**.
 4. Writes a Conventional Commit, e.g.:
 
@@ -647,7 +647,7 @@ The Tomato app has no `data-testid` or `data-test` attributes, so `getByTestId` 
 
 ### "The agent wants to commit but there are generated reports in the diff"
 
-Reports (`reports/`, `allure-results/`, `screenshots/`, `videos/`, `traces/`) are git-ignored. If they appear in `git status`, the ignore rule isn't applied — run `npm run verify:secrets` and review the diff before staging anything.
+Reports (`reports/`, `allure-results/`) are git-ignored, including failure artifacts under `reports/artifacts/`. If they appear in `git status`, the ignore rule isn't applied — run `npm run verify:secrets` and review the diff before staging anything.
 
 ### "I don't have Jira credentials configured"
 
