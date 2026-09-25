@@ -35,6 +35,7 @@ The reference application is [Tomato Food Delivery](https://tomato-food-delivery
 - **Allure reporting** — per-scenario steps, status, duration, environment info, and attached failure artifacts.
 - **Cucumber reporting** — HTML + JSON report plus a console summary script.
 - **Failure artifacts** — screenshot, Playwright trace, error message, and console errors captured automatically on failure.
+- **Screenshots & video** — optional `SCREENSHOT=on` and `VIDEO=on|retain-on-failure` capture pass/fail screenshots and scenario recordings into `reports/`.
 - **Parallel execution** — Cucumber `parallel` workers with isolated `BrowserContext` per scenario.
 - **Controlled retries** — 1 retry on CI, 0 locally (configurable via `RETRIES`/CI).
 - **Quality gates** — ESLint, Prettier, and strict TypeScript bundled into `npm run verify`.
@@ -235,6 +236,27 @@ When a scenario fails, `src/utils/artifact-manager.ts` automatically captures an
 - **Console errors** — `reports/artifacts/console-errors.txt`
 
 Artifacts are attached to the report via `World#attach`, so the Allure report includes them automatically.
+
+## Screenshots & Video
+
+Beyond failure artifacts, the framework supports opt-in screenshots and video recording, fully driven by the `SCREENSHOT` and `VIDEO` environment variables:
+
+- `SCREENSHOT=on` — full-page screenshot for **every** scenario → `reports/screenshots/<scenario>.png` (attached to the report).
+- `SCREENSHOT=only-on-failure` (default) — failure screenshots only (see above).
+- `SCREENSHOT=off` — no screenshots.
+- `VIDEO=on` — records **every** scenario → `reports/videos/<scenario>.webm`.
+- `VIDEO=retain-on-failure` — records all scenarios but **keeps only failing ones**; passing recordings are discarded.
+- `VIDEO=off` (default) — no video recording.
+
+Examples:
+
+```bash
+ENV=dev SCREENSHOT=on npm test            # screenshot every scenario
+ENV=dev VIDEO=retain-on-failure npm test  # keep a video only when a scenario fails
+ENV=dev SCREENSHOT=on VIDEO=on npm test   # capture both for every scenario
+```
+
+Video is recorded by Playwright (via `recordVideo`) and finalized in the `After` hook once the context closes. Kept videos and screenshots live under `reports/` and are cleaned by `npm run report:clean`.
 
 ## CI/CD
 

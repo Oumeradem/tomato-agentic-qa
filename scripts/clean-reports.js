@@ -21,6 +21,8 @@ const TARGETS = [
   'reports/allure-report',
   'reports/playwright-report',
   'reports/artifacts',
+  'reports/screenshots',
+  'reports/videos',
   'reports/cucumber-report.json',
   'reports/cucumber-report.html',
 ];
