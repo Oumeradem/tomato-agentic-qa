@@ -258,6 +258,12 @@ ENV=dev SCREENSHOT=on VIDEO=on npm test   # capture both for every scenario
 
 Video is recorded by Playwright (via `recordVideo`) and finalized in the `After` hook once the context closes. Kept videos and screenshots live under `reports/` and are cleaned by `npm run report:clean`.
 
+> **Playback note:** recordings are saved as **WebM** (VP8/VP9 + Opus), which QuickTime and Windows Media Player cannot decode. Open them in Chrome, Edge, or VLC — or convert to universally playable MP4 with:
+>
+> ```bash
+> npm run videos:mp4   # requires ffmpeg; converts reports/videos/*.webm -> .mp4
+> ```
+
 ## CI/CD
 
 ### GitHub Actions

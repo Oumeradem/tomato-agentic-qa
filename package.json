@@ -32,6 +32,7 @@
     "report:allure:open": "allure open ./reports/allure-report",
     "report:cucumber": "node ./scripts/summarize-cucumber-report.js",
     "report:clean": "node ./scripts/clean-reports.js",
+    "videos:mp4": "node ./scripts/convert-videos.js",
     "lint": "eslint src scripts",
     "lint:fix": "eslint src scripts --fix",
     "format": "prettier --write \"**/*.{ts,js,json,jsonc,md,yml,yaml,mdx}\"",
