@@ -109,7 +109,8 @@ BROWSER=chromium
 HEADLESS=true
 WORKERS=1
 TRACE=on-first-retry
-SCREENSHOT=only-on-failure
+SCREENSHOT=on
+VIDEO=on
 ```
 
 > **Security:** real credentials live **only** in `.env` / CI secret stores. Never put them in feature files, code, prompts, or this guide. Run `npm run verify:secrets` before committing.

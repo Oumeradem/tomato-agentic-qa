@@ -8,4 +8,4 @@
 - CI/CD injects real values via secrets (GitHub Secrets, Jenkins Credentials); see `scripts/ci/prepare-env.sh`.
 - Browser, headless, workers, timeout, trace, screenshot, and video are all config-driven:
   `BROWSER=firefox npx cucumber-js`, `HEADLESS=false npm run test:headed`, `WORKERS=4 npx cucumber-js`.
-- Defaults: retries CI=1 / local=0; trace `on-first-retry`; screenshot `only-on-failure`.
+- Defaults: retries CI=1 / local=0; trace `on-first-retry`; screenshot `on`; video `on`.

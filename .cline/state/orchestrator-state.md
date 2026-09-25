@@ -33,4 +33,3 @@ PR Status: PR #1 OPEN (auto-updated)
 Jira Status: not applicable
 
 Errors and Blockers: none
-

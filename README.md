@@ -35,7 +35,7 @@ The reference application is [Tomato Food Delivery](https://tomato-food-delivery
 - **Allure reporting** — per-scenario steps, status, duration, environment info, and attached failure artifacts.
 - **Cucumber reporting** — HTML + JSON report plus a console summary script.
 - **Failure artifacts** — screenshot, Playwright trace, error message, and console errors captured automatically on failure.
-- **Screenshots & video** — optional `SCREENSHOT=on` and `VIDEO=on|retain-on-failure` capture pass/fail screenshots and scenario recordings into `reports/`.
+- **Screenshots & video** — full-page screenshot + scenario video captured for **every** scenario into `reports/screenshots/` and `reports/videos/` (tunable via `SCREENSHOT`/`VIDEO`).
 - **Parallel execution** — Cucumber `parallel` workers with isolated `BrowserContext` per scenario.
 - **Controlled retries** — 1 retry on CI, 0 locally (configurable via `RETRIES`/CI).
 - **Quality gates** — ESLint, Prettier, and strict TypeScript bundled into `npm run verify`.
@@ -140,20 +140,20 @@ npm run report:allure
 
 All runtime behavior is driven by environment variables read through `src/config/config.ts` (values can also come from `.env`). The table below lists the most important variables — see `.env.example` for the full set with comments.
 
-| Variable                | Default           | Description                                               |
-| ----------------------- | ----------------- | --------------------------------------------------------- |
-| `ENV`                   | `qa`              | Target environment: `dev` \| `qa` \| `stage` \| `prod`    |
-| `BASE_URL`              | per-env           | Optional override of the environment base URL             |
-| `BROWSER`               | `chromium`        | `chromium` \| `firefox` \| `webkit`                       |
-| `HEADLESS`              | `true`            | Headless mode                                             |
-| `TIMEOUT`               | `30000`           | Playwright action timeout (ms)                            |
-| `WORKERS`               | `1`               | Cucumber parallel workers (1 = sequential)                |
-| `RETRIES`               | CI=1 / local=0    | Scenario retry count                                      |
-| `TRACE`                 | `on-first-retry`  | Playwright trace mode                                     |
-| `SCREENSHOT`            | `only-on-failure` | Screenshot mode                                           |
-| `VIDEO`                 | `off`             | Video mode                                                |
-| `LOG_LEVEL`             | `info`            | Logger verbosity (`debug` \| `info` \| `warn` \| `error`) |
-| `USERNAME` / `PASSWORD` | —                 | Application credentials (never hardcoded)                 |
+| Variable                | Default          | Description                                               |
+| ----------------------- | ---------------- | --------------------------------------------------------- |
+| `ENV`                   | `qa`             | Target environment: `dev` \| `qa` \| `stage` \| `prod`    |
+| `BASE_URL`              | per-env          | Optional override of the environment base URL             |
+| `BROWSER`               | `chromium`       | `chromium` \| `firefox` \| `webkit`                       |
+| `HEADLESS`              | `true`           | Headless mode                                             |
+| `TIMEOUT`               | `30000`          | Playwright action timeout (ms)                            |
+| `WORKERS`               | `1`              | Cucumber parallel workers (1 = sequential)                |
+| `RETRIES`               | CI=1 / local=0   | Scenario retry count                                      |
+| `TRACE`                 | `on-first-retry` | Playwright trace mode                                     |
+| `SCREENSHOT`            | `on`             | Screenshot mode (`on` = every scenario)                   |
+| `VIDEO`                 | `on`             | Video mode (`on` = every scenario)                        |
+| `LOG_LEVEL`             | `info`           | Logger verbosity (`debug` \| `info` \| `warn` \| `error`) |
+| `USERNAME` / `PASSWORD` | —                | Application credentials (never hardcoded)                 |
 
 Example:
 
@@ -239,14 +239,14 @@ Artifacts are attached to the report via `World#attach`, so the Allure report in
 
 ## Screenshots & Video
 
-Beyond failure artifacts, the framework supports opt-in screenshots and video recording, fully driven by the `SCREENSHOT` and `VIDEO` environment variables:
+By default the framework captures a full-page screenshot **and** a scenario video for **every** scenario. Both are fully driven by the `SCREENSHOT` and `VIDEO` environment variables:
 
-- `SCREENSHOT=on` — full-page screenshot for **every** scenario → `reports/screenshots/<scenario>.png` (attached to the report).
-- `SCREENSHOT=only-on-failure` (default) — failure screenshots only (see above).
+- `SCREENSHOT=on` (**default**) — full-page screenshot for **every** scenario → `reports/screenshots/<scenario>.png` (attached to the report).
+- `SCREENSHOT=only-on-failure` — failure screenshots only (see above).
 - `SCREENSHOT=off` — no screenshots.
-- `VIDEO=on` — records **every** scenario → `reports/videos/<scenario>.webm`.
+- `VIDEO=on` (**default**) — records **every** scenario → `reports/videos/<scenario>.webm`.
 - `VIDEO=retain-on-failure` — records all scenarios but **keeps only failing ones**; passing recordings are discarded.
-- `VIDEO=off` (default) — no video recording.
+- `VIDEO=off` — no video recording.
 
 Examples:
 

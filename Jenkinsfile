@@ -45,7 +45,8 @@ pipeline {
     WORKERS = "${params.WORKERS}"
     HEADLESS = 'true'
     TRACE = 'on-first-retry'
-    SCREENSHOT = 'only-on-failure'
+    SCREENSHOT = 'on'
+    VIDEO = 'on'
     // Repository root used by the report/artifact steps below.
     REPORTS_DIR = "${WORKSPACE}/reports"
   }
