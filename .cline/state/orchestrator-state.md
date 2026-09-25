@@ -2,15 +2,15 @@
 
 Workflow: View Menu Button (create-test)
 
-Status: Test execution complete — PASS
+Status: Completed
 
-Current Agent: test-execution-agent
+Current Agent: (none)
 
-Completed Agents: planner-agent, test-generator-agent, test-execution-agent
+Completed Agents: planner-agent, test-generator-agent, test-execution-agent, commit-agent, push-agent, pr-agent
 
-Next Agent: branch-agent (awaiting approval)
+Next Agent: (none)
 
-Approval Required: true (approve git stage)
+Approval Required: false
 
 Test Status: PASSED — 4/4 scenarios, 20/20 steps, 0 failures (@view-menu)
 
@@ -24,11 +24,11 @@ src/pages/MenuPage.ts (added viewMenuButton / heroHeading / exploreMenuHeading /
 
 Current Branch: chore/clean-fresh-start
 
-Commit Status: not committed
+Commit Status: committed — 4bd1fd7
 
-Push Status: not pushed
+Push Status: pushed (in sync, 0 ahead/behind)
 
-PR Status: PR #1 open (chore/clean-fresh-start)
+PR Status: PR #1 OPEN (auto-updated)
 
 Jira Status: not applicable
 
