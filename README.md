@@ -1,49 +1,48 @@
-# Playwright + TypeScript + Cucumber BDD Framework
+# 🍅 Tomato Agentic QA — Playwright + Cucumber BDD Automation Framework
 
-A **production-ready, enterprise-grade UI test automation framework** built with **Playwright**, **TypeScript**, and **Cucumber BDD**, featuring Allure + Cucumber reporting, Page Object Model, multi-environment configuration, CI/CD (GitHub Actions + Jenkins), and an AI-agent toolchain for Cline.
+![Cucumber](https://img.shields.io/badge/Cucumber-23D96C?logo=cucumber&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![Jenkins](https://img.shields.io/badge/CI-Jenkins-D24939?logo=jenkins&logoColor=white)
+![Allure](https://img.shields.io/badge/Reporting-Allure-C8325F)
+![AI Agents](https://img.shields.io/badge/AI-Cline%20Agents-7C3AED)
 
-The reference application is [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app/) — the application under test used to validate the framework end-to-end.
+A **production-ready, enterprise-grade UI test automation framework** built with **Playwright**, **TypeScript**, and **Cucumber BDD** — extended with an **AI-agent orchestrator** that plans, generates, executes, heals, and reports on tests end-to-end.
 
----
+The application under test is [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app/), used to validate the framework against a real, live app.
 
-## Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [Running Tests](#running-tests)
-- [Test Tags & Suites](#test-tags--suites)
-- [Reporting](#reporting)
-- [Failure Artifacts](#failure-artifacts)
-- [CI/CD](#cicd)
-- [Jira Integration](#jira-integration)
-- [Cline AI Agents, Skills & Rules](#cline-ai-agents-skills--rules)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
+> **What makes this different:** beyond a clean POM + BDD setup, this repo ships a full **Cline AI-agent toolchain** (planner → test generator → executor → healer → git → Jira) so a feature request can go from a plain sentence to a passing, reported, and Jira-tracked test suite — with video and screenshot evidence for every scenario.
 
 ---
 
-## Features
+## ✨ Highlights
 
-- **BDD with Cucumber** — human-readable Gherkin features that describe business behavior.
-- **Page Object Model** — one page/component per class; locators and actions encapsulated, composition over inheritance.
-- **Multi-environment** — `dev`, `qa`, `stage`, `prod` configs; switch with `ENV=qa npm test`.
-- **Secure credentials** — secrets live in git-ignored `.env`; CI injects them from GitHub Secrets / Jenkins Credentials.
-- **Allure reporting** — per-scenario steps, status, duration, environment info, and attached failure artifacts.
-- **Cucumber reporting** — HTML + JSON report plus a console summary script.
-- **Failure artifacts** — screenshot, Playwright trace, error message, and console errors captured automatically on failure.
-- **Screenshots & video** — full-page screenshot + scenario video captured for **every** scenario into `reports/screenshots/` and `reports/videos/` (tunable via `SCREENSHOT`/`VIDEO`).
-- **Parallel execution** — Cucumber `parallel` workers with isolated `BrowserContext` per scenario.
-- **Controlled retries** — 1 retry on CI, 0 locally (configurable via `RETRIES`/CI).
-- **Quality gates** — ESLint, Prettier, and strict TypeScript bundled into `npm run verify`.
-- **CI/CD** — GitHub Actions workflows (test, smoke, regression) and a declarative Jenkinsfile.
-- **AI-agent toolchain** — Cline agents (planner, test generator, healer, git, Jira), skills, workflows, and rules.
-- **Jira integration** — import failed scenarios as bugs and update issue statuses via helper scripts.
+- 🧠 **AI-agent orchestrator** — a multi-agent pipeline that inspects the live app, writes a test plan, generates feature files + step definitions + Page Objects, runs the suite, produces a pass/fail verdict, and heals failures (max 3 attempts).
+- 🎥 **Evidence on every run** — full-page screenshot **and** scenario video captured for **every** scenario by default, into `reports/` and attached to the report.
+- 🧩 **Page Object Model** — one page/component per class, locators & actions encapsulated, composition over inheritance.
+- 🏷️ **BDD with Cucumber** — human-readable Gherkin; one feature file serves multiple suites via tags (no duplication).
+- 🌐 **Multi-environment** — `dev`, `qa`, `stage`, `prod` configs; switch with `ENV=qa npm test`.
+- 🪲 **Jira integration** — import failed scenarios as bugs (with de-duplication) and sync issue statuses from the latest report.
+- 🔁 **CI/CD** — GitHub Actions workflows (test, smoke, regression) and a declarative Jenkinsfile sharing one runner.
+- 📊 **Dual reporting** — Allure + Cucumber HTML/JSON, plus a console summary.
+- 🛡️ **Security & quality gates** — secrets only in git-ignored `.env`; `npm run verify` + `npm run verify:secrets`.
 
-## Tech Stack
+---
+
+## 🖼️ Demo
+
+**View Menu** button test (planned → generated → executed through the agent orchestrator):
+
+| Home page (hero)                   | After clicking View Menu (scroll to menu) |
+| ---------------------------------- | ----------------------------------------- |
+| ![Home](docs/assets/demo-home.png) | ![Scroll](docs/assets/demo-scroll.png)    |
+
+**What you get from every run:** a report (`reports/cucumber-report/` + Allure), a screenshot per scenario (`reports/screenshots/`), and a video per scenario (`reports/videos/`).
+
+---
+
+## 🧰 Tech Stack
 
 | Layer        | Technology                                            |
 | ------------ | ----------------------------------------------------- |
@@ -59,7 +58,34 @@ The reference application is [Tomato Food Delivery](https://tomato-food-delivery
 
 ---
 
-## Architecture
+## 🚀 Quick Start
+
+```bash
+# 1. Install dependencies
+npm ci
+
+# 2. Install the Playwright browser (Chromium is the default)
+npx playwright install chromium
+
+# 3. Create your local environment file from the template
+cp .env.example .env
+# ...then fill in USERNAME/PASSWORD (and any overrides) in .env
+
+# 4. Run the full suite
+npm test
+
+# 5. Generate reports
+npm run report:cucumber
+npm run report:allure
+```
+
+> Tomato has no public demo accounts — register one in the app and store the credentials in `.env` (`USERNAME` / `PASSWORD`), never in code.
+
+---
+
+## 🏗️ Architecture
+
+The layered flow is always: **Feature file → Step definitions → Page Object → Playwright → Assertion → Report**.
 
 ```text
 project-root/
@@ -103,40 +129,15 @@ project-root/
 └── README.md
 ```
 
-> The flow is always: **Feature file → Step definitions → Page Object → Playwright → Assertion → Report**.
-
 ## Prerequisites
 
 - **Node.js >= 20** (recommend 20 LTS or newer)
 - **npm**
 - Git
 
-## Quick Start
-
-```bash
-# 1. Install dependencies
-npm ci
-
-# 2. Install the Playwright browser (Chromium is the default)
-npx playwright install chromium
-
-# 3. Create your local environment file from the template
-cp .env.example .env
-# ...then fill in USERNAME/PASSWORD (and any overrides) in .env
-
-# 4. Run the full suite
-npm test
-
-# 5. Generate reports
-npm run report:cucumber
-npm run report:allure
-```
-
-> Tomato has no public demo accounts — register one in the app and store the credentials in `.env` (`USERNAME` / `PASSWORD`), never in code.
-
 ---
 
-## Configuration
+## ⚙️ Configuration
 
 All runtime behavior is driven by environment variables read through `src/config/config.ts` (values can also come from `.env`). The table below lists the most important variables — see `.env.example` for the full set with comments.
 
@@ -164,7 +165,9 @@ ENV=stage HEADLESS=false npm run test:headed
 
 Per-environment base URLs and metadata live in `src/config/environments/<env>.ts`.
 
-## Running Tests
+---
+
+## 🧪 Running Tests
 
 | Command                                                  | Description                                   |
 | -------------------------------------------------------- | --------------------------------------------- |
@@ -179,7 +182,7 @@ Per-environment base URLs and metadata live in `src/config/environments/<env>.ts
 | `npm run test:dry-run`                                   | Validate step definitions only (no execution) |
 | `npm run test:chromium` / `test:firefox` / `test:webkit` | Browser-specific runs                         |
 
-## Test Tags & Suites
+## 🏷️ Test Tags & Suites
 
 Features use Cucumber tags so one feature file serves multiple suites — no duplicated files:
 
@@ -199,7 +202,7 @@ npx cucumber-js --tags "@smoke and @critical"
 
 ---
 
-## Reporting
+## 📊 Reporting
 
 ### Cucumber report
 
@@ -226,7 +229,9 @@ Allure captures per scenario: steps, status, duration, environment info, and fai
 npm run report:clean            # wipe reports/ (allure + cucumber + artifacts)
 ```
 
-## Failure Artifacts
+---
+
+## 🧯 Failure Artifacts
 
 When a scenario fails, `src/utils/artifact-manager.ts` automatically captures and attaches:
 
@@ -237,7 +242,9 @@ When a scenario fails, `src/utils/artifact-manager.ts` automatically captures an
 
 Artifacts are attached to the report via `World#attach`, so the Allure report includes them automatically.
 
-## Screenshots & Video
+---
+
+## 🎥 Screenshots & Video
 
 By default the framework captures a full-page screenshot **and** a scenario video for **every** scenario. Both are fully driven by the `SCREENSHOT` and `VIDEO` environment variables:
 
@@ -264,7 +271,9 @@ Video is recorded by Playwright (via `recordVideo`) and finalized in the `After`
 > npm run videos:mp4   # requires ffmpeg; converts reports/videos/*.webm -> .mp4
 > ```
 
-## CI/CD
+---
+
+## 🔁 CI/CD
 
 ### GitHub Actions
 
@@ -290,7 +299,9 @@ Requirements: NodeJS plugin (tool `node20`) and a Jenkins credential `tomato` (u
 
 Both CI systems share `scripts/ci/prepare-env.sh` and `scripts/ci/run-tests.sh` so behaviour is identical everywhere.
 
-## Jira Integration
+---
+
+## 🪲 Jira Integration
 
 Two helper scripts (Node 18+, no dependencies) back the Jira agents:
 
@@ -298,28 +309,36 @@ Two helper scripts (Node 18+, no dependencies) back the Jira agents:
 # Import failed scenarios from the Cucumber JSON report as Jira bugs
 npm run jira:import:dry-run      # preview first (mandatory)
 npm run jira:import              # create/update issues (dedupes by summary)
+```
+
+```bash
+# Update an issue's status via its available transitions
+npm run jira:status -- QA-123 "In Progress"
+```
+
+Environment: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, optional `JIRA_ISSUE_TYPE` (default `Bug`).
 
 ---
 
-## Cline AI Agents, Skills & Rules
+## 🤖 Cline AI-Agent Toolchain
 
 This repository ships a complete Cline toolchain to let AI agents plan, generate, heal, run, and report on tests safely.
 
 ### Agents (`.cline/agents/`)
 
-| Agent                  | Responsibility                                                              |
-|------------------------|-----------------------------------------------------------------------------|
-| `orchestrator/orchestrator-agent` | Coordinates all agents, runs the workflow in order, maintains state, enforces approval gates |
-| `planner/planner-agent`      | Converts requirements into structured BDD test plans; inspects the live UI first |
-| `test-generator/test-generator-agent` | Turns plans into feature files, step definitions, and Page Objects (reusing existing ones) |
+| Agent                                 | Responsibility                                                                                           |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `orchestrator/orchestrator-agent`     | Coordinates all agents, runs the workflow in order, maintains state, enforces approval gates             |
+| `planner/planner-agent`               | Converts requirements into structured BDD test plans; inspects the live UI first                         |
+| `test-generator/test-generator-agent` | Turns plans into feature files, step definitions, and Page Objects (reusing existing ones)               |
 | `test-execution/test-execution-agent` | Runs the suite for a tag/feature, parses reports, and produces a pass/fail verdict with failure evidence |
-| `healer/healer-agent`        | Diagnoses and fixes failing tests — max 3 attempts, then escalates        |
-| `git/commit-agent`           | Reviews diffs, blocks secrets, creates Conventional Commits                |
-| `git/branch-agent`           | Creates correctly named branches; never works on `main` unapproved         |
-| `git/push-agent`             | Pushes only with explicit approval                                         |
-| `git/pr-agent`               | Drafts pull requests with real test results and report links               |
-| `jira-import/jira-import-agent` | Imports BDD scenarios into Jira after de-duplication                     |
-| `jira-status/jira-status-agent` | Syncs Jira statuses from the latest report (never PASS on FAIL)          |
+| `healer/healer-agent`                 | Diagnoses and fixes failing tests — max 3 attempts, then escalates                                       |
+| `git/commit-agent`                    | Reviews diffs, blocks secrets, creates Conventional Commits                                              |
+| `git/branch-agent`                    | Creates correctly named branches; never works on `main` unapproved                                       |
+| `git/push-agent`                      | Pushes only with explicit approval                                                                       |
+| `git/pr-agent`                        | Drafts pull requests with real test results and report links                                             |
+| `jira-import/jira-import-agent`       | Imports BDD scenarios into Jira after de-duplication                                                     |
+| `jira-status/jira-status-agent`       | Syncs Jira statuses from the latest report (never PASS on FAIL)                                          |
 
 ### Skills (`.cline/skills/`)
 
@@ -336,7 +355,9 @@ This repository ships a complete Cline toolchain to let AI agents plan, generate
 
 `architecture`, `coding-standards`, `playwright-rules`, `cucumber-rules`, `locator-rules`, `environment-rules`, `git-rules`, `agent-rules`, `security-rules`, `approval-rules`.
 
-## Best Practices
+---
+
+## ✅ Best Practices
 
 - **Locators**: role → label → placeholder → text → `data-test` → stable CSS → XPath (last resort). The framework registers `data-test` as the Playwright test-id attribute because the reference app uses `data-test`, not `data-testid`.
 - **No arbitrary waits** — rely on Playwright auto-waiting and assertions.
@@ -345,21 +366,20 @@ This repository ships a complete Cline toolchain to let AI agents plan, generate
 - **Secrets** — only in `.env`/CI secret stores; run `npm run verify:secrets` before committing.
 - **Quality gate** — run `npm run verify` before finishing any task.
 
-## Troubleshooting
+---
 
-| Symptom                                | Likely fix                                                        |
-|----------------------------------------|-------------------------------------------------------------------|
-| `getByTestId` can't find elements      | The app may use `data-test` (registered globally). Use `data-test` attributes. |
-| Tests fail only in CI                   | Credentials missing — add GitHub Secrets / Jenkins Credentials and run `prepare-env`. |
-| `npx playwright install` needed         | Install the browser for the machine: `npx playwright install chromium`. |
-| Allure CLI unknown syntax error         | Use the new syntax: `allure generate ./reports/allure-results --output ./reports/allure-report` (the `report:allure` script already does). |
-| Parallel flakiness                       | Lower `WORKERS`, ensure scenarios are isolated (fresh context per scenario). |
-| Step ambiguous                           | Two step definitions match the same text — consolidate with parameterized steps. |
-| Secrets flagged by `verify:secrets`      | Remove the real value or add a precise ignore in `scripts/verify-secrets.js`. |
+## 🔧 Troubleshooting
 
+| Symptom                             | Likely fix                                                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `getByTestId` can't find elements   | The app may use `data-test` (registered globally). Use `data-test` attributes.                                                             |
+| Tests fail only in CI               | Credentials missing — add GitHub Secrets / Jenkins Credentials and run `prepare-env`.                                                      |
+| `npx playwright install` needed     | Install the browser for the machine: `npx playwright install chromium`.                                                                    |
+| Allure CLI unknown syntax error     | Use the new syntax: `allure generate ./reports/allure-results --output ./reports/allure-report` (the `report:allure` script already does). |
+| Parallel flakiness                  | Lower `WORKERS`, ensure scenarios are isolated (fresh context per scenario).                                                               |
+| Step ambiguous                      | Two step definitions match the same text — consolidate with parameterized steps.                                                           |
+| Secrets flagged by `verify:secrets` | Remove the real value or add a precise ignore in `scripts/verify-secrets.js`.                                                              |
 
-# Update an issue's status via its available transitions
-npm run jira:status -- QA-123 "In Progress"
-```
+---
 
-Environment: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, optional `JIRA_ISSUE_TYPE` (default `Bug`).
+Built with ❤️ as a QA automation portfolio project. Contributions and feedback welcome.
