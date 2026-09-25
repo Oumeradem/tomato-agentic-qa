@@ -30,6 +30,7 @@ import { MenuPage } from '../pages/MenuPage';
 import { CartPage } from '../pages/CartPage';
 
 export interface PageObjects {
+  readonly header: Header;
   readonly loginPage: LoginPage;
   readonly signUpModal: SignUpModal;
   readonly menuPage: MenuPage;
@@ -40,6 +41,7 @@ export interface PageObjects {
 export function createPageObjects(page: Page): PageObjects {
   const header = new Header(page);
   return {
+    header,
     loginPage: new LoginPage(page, header),
     signUpModal: new SignUpModal(page),
     menuPage: new MenuPage(page),
