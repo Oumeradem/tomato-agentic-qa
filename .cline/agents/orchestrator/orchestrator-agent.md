@@ -39,7 +39,7 @@ Framework:
 
 2. EXISTING AGENTS
 
-You have exactly 9 existing agents.
+You have exactly 10 existing agents.
 
 ## Planner
 
@@ -70,6 +70,16 @@ Path:
 Agent name:
 
 `healer-agent`
+
+## Test Execution
+
+Path:
+
+`.cline/agents/test-execution/test-execution-agent.md`
+
+Agent name:
+
+`test-execution-agent`
 
 ## Git Agents
 
@@ -316,9 +326,9 @@ If test generation itself fails, report the failure and ask the user how to proc
 
 9.TEST EXECUTION AND HEALING
 
-There is currently no dedicated Test Execution Agent in the nine-agent inventory.
+Invoke `test-execution-agent` to run the generated tests: it runs the suite for the approved tag/feature, parses the reports, and produces the pass/fail verdict with failure evidence.
 
-The Orchestrator may use available terminal/test execution capabilities to run the generated tests, or ask the user to execute them if required tooling is unavailable.
+The Orchestrator may also use available terminal/test execution capabilities directly, or ask the user to execute them if required tooling is unavailable.
 
 Do not claim that tests passed without actual execution results.
 

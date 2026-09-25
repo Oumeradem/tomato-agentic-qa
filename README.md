@@ -281,8 +281,10 @@ This repository ships a complete Cline toolchain to let AI agents plan, generate
 
 | Agent                  | Responsibility                                                              |
 |------------------------|-----------------------------------------------------------------------------|
+| `orchestrator/orchestrator-agent` | Coordinates all agents, runs the workflow in order, maintains state, enforces approval gates |
 | `planner/planner-agent`      | Converts requirements into structured BDD test plans; inspects the live UI first |
 | `test-generator/test-generator-agent` | Turns plans into feature files, step definitions, and Page Objects (reusing existing ones) |
+| `test-execution/test-execution-agent` | Runs the suite for a tag/feature, parses reports, and produces a pass/fail verdict with failure evidence |
 | `healer/healer-agent`        | Diagnoses and fixes failing tests — max 3 attempts, then escalates        |
 | `git/commit-agent`           | Reviews diffs, blocks secrets, creates Conventional Commits                |
 | `git/branch-agent`           | Creates correctly named branches; never works on `main` unapproved         |
