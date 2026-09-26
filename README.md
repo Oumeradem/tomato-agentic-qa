@@ -38,6 +38,11 @@ The application under test is [Tomato Food Delivery](https://tomato-food-deliver
 | ---------------------------------- | ----------------------------------------- |
 | ![Home](docs/assets/demo-home.png) | ![Scroll](docs/assets/demo-scroll.png)    |
 
+**Ordering journey** regression test (a cancelled/failed Stripe payment redirects back to the home page):
+
+- 🎥 [Scenario video](docs/assets/ordering-failed-payment-redirect.webm) — WebM, plays in Chrome/Edge/VLC
+- 🖼️ [Failure screenshot](docs/assets/ordering-failed-payment-redirect.png)
+
 **What you get from every run:** a report (`reports/cucumber-report/` + Allure), a screenshot per scenario (`reports/screenshots/`), and a video per scenario (`reports/videos/`).
 
 ---
