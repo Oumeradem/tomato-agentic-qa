@@ -28,6 +28,7 @@ import { Header } from '../pages/components/Header';
 import { SignUpModal } from '../pages/components/SignUpModal';
 import { MenuPage } from '../pages/MenuPage';
 import { CartPage } from '../pages/CartPage';
+import { OrderPage } from '../pages/OrderPage';
 
 export interface PageObjects {
   readonly header: Header;
@@ -35,6 +36,7 @@ export interface PageObjects {
   readonly signUpModal: SignUpModal;
   readonly menuPage: MenuPage;
   readonly cartPage: CartPage;
+  readonly orderPage: OrderPage;
 }
 
 /** Composes the page objects for a fresh page (dependency injection / fixture). */
@@ -46,5 +48,6 @@ export function createPageObjects(page: Page): PageObjects {
     signUpModal: new SignUpModal(page),
     menuPage: new MenuPage(page),
     cartPage: new CartPage(page),
+    orderPage: new OrderPage(page),
   };
 }

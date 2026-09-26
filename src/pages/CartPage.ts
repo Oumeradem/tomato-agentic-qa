@@ -38,6 +38,12 @@ export class CartPage extends BasePage {
     return this.page.getByRole('heading', { name: 'Cart Total', exact: true });
   }
 
+  /** Clicks "PROCEED TO CHECKOUT" to move to the delivery-information page. */
+  public async proceedToCheckout(): Promise<void> {
+    // The app's buttons lack role="button", so use getByText instead.
+    await this.page.locator('button').filter({ hasText: 'PROCEED TO CHECKOUT' }).click();
+  }
+
   /** The totals block (div.cart-total) containing the value rows. */
   private get totalsBlock(): Locator {
     return this.cartTotalHeading.locator('..');
