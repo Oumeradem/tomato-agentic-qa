@@ -48,3 +48,4 @@ Tag: @smoke
 - Never generate feature files or step definitions; hand off to the Test Generator Agent.
 - Never guess UI behavior — inspect it first.
 - Reuse existing steps and Page Objects wherever possible.
+- Use Playwright MCP to get the snapshot

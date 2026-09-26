@@ -21,6 +21,12 @@ export class CustomWorld extends World {
   public scenario: ScenarioMetadata = { name: '', tags: [] };
   public consoleErrors: string[] = [];
 
+  /**
+   * Per-scenario scratchpad for values shared between steps (e.g. generated
+   * credentials, captured dialog messages). Fresh per scenario.
+   */
+  public scenarioContext: Record<string, unknown> = {};
+
   constructor(options: IWorldOptions) {
     super(options);
   }

@@ -1,10 +1,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { BrowserContext, Page } from '@playwright/test';
+import { BrowserContext, Page, Video } from '@playwright/test';
 import { config } from '../config/config';
 import { logger } from './logger';
+import { VideoMode } from '../types';
 
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
+const REPORT_ROOT = path.join(PROJECT_ROOT, 'reports');
 
 /**
  * Minimal shape of Cucumber's `World#attach` that this helper relies on.
@@ -25,6 +27,66 @@ function sanitizeFilename(name: string): string {
     .replace(/[^a-zA-Z0-9._-]+/g, '_')
     .replace(/^_+|_+$/g, '')
     .slice(0, 120);
+}
+
+function ensureDir(dir: string): string {
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
+}
+
+/**
+ * Directory where Playwright writes raw recordings while a scenario runs.
+ * Final videos are saved (or discarded) from here once the context closes.
+ */
+export function videoRecordingsDir(): string {
+  return ensureDir(path.join(REPORT_ROOT, 'videos', '.recordings'));
+}
+
+/**
+ * Captures a full-page screenshot for a passing scenario when `SCREENSHOT=on`
+ * and attaches it to the report (Allure picks it up automatically).
+ */
+export async function capturePassScreenshot(sink: AttachmentSink, page: Page, scenarioName: string): Promise<void> {
+  const safeName = sanitizeFilename(scenarioName);
+  const dir = ensureDir(path.join(REPORT_ROOT, 'screenshots'));
+  const screenshotPath = path.join(dir, `${safeName}.png`);
+  try {
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    await sink.attach(fs.readFileSync(screenshotPath), { mediaType: 'image/png', fileName: `${safeName}.png` });
+    logger.info('Screenshot captured', { path: screenshotPath });
+  } catch (error) {
+    logger.warn('Failed to capture screenshot', { error: String(error) });
+  }
+}
+
+/**
+ * Finalizes the recorded video for a scenario once the context has closed.
+ * Keeps the video when `VIDEO=on` or when `VIDEO=retain-on-failure` and the
+ * scenario failed; otherwise discards the recording.
+ */
+export async function saveOrDiscardVideo(
+  video: Video | null,
+  scenarioName: string,
+  mode: VideoMode,
+  isFailed: boolean,
+): Promise<void> {
+  if (!video) return;
+  const keep = mode === 'on' || (mode === 'retain-on-failure' && isFailed);
+  try {
+    const source = await video.path();
+    if (keep) {
+      const dir = ensureDir(path.join(REPORT_ROOT, 'videos'));
+      const dest = path.join(dir, `${sanitizeFilename(scenarioName)}.webm`);
+      await video.saveAs(dest);
+      logger.info('Video saved', { path: dest });
+    } else {
+      logger.info('Discarded video (not retained)');
+    }
+    // Remove the temporary recording regardless of whether it was kept.
+    fs.rmSync(source, { force: true });
+  } catch (error) {
+    logger.warn('Failed to finalize video', { error: String(error) });
+  }
 }
 
 function ensureArtifactsDir(): string {
