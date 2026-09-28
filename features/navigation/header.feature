@@ -60,3 +60,8 @@ Feature: Header Navigation Tabs
   Scenario: Menu tab scrolls to the explore-menu section
     When I click the "Menu" tab
     Then the explore-menu section is in view
+
+  @smoke
+  Scenario: Home tab shows a pointer cursor on hover
+    When I hover over the "Home" tab
+    Then the "Home" tab shows a pointer cursor

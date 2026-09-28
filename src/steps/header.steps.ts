@@ -47,6 +47,14 @@ When('I click the {string} tab', async function (this: CustomWorld, name: string
   await headerTab(this, name).click();
 });
 
+When('I hover over the {string} tab', async function (this: CustomWorld, name: string): Promise<void> {
+  await headerTab(this, name).hover();
+});
+
+Then('the {string} tab shows a pointer cursor', async function (this: CustomWorld, name: string): Promise<void> {
+  await expect(headerTab(this, name)).toHaveCSS('cursor', 'pointer');
+});
+
 When('I click the Tomato logo', async function (this: CustomWorld): Promise<void> {
   await this.pages.header.tomatoLogo.click();
 });
