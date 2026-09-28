@@ -67,15 +67,5 @@
     "wrongpass"
   ],
   "flagWords": [],
-  "ignorePaths": [
-    "node_modules/**",
-    "reports/**",
-    "screenshots/**",
-    "videos/**",
-    "traces/**",
-    "allure-results/**",
-    "allure-report/**",
-    "dist/**",
-    ".git/**"
-  ]
+  "ignorePaths": ["node_modules/**", "reports/**", "allure-results/**", "allure-report/**", "dist/**", ".git/**"]
 }

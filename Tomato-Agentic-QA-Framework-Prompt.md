@@ -135,10 +135,6 @@ project-root/
 │   ├── allure-report/
 │   └── cucumber-report/
 │
-├── screenshots/
-├── videos/
-├── traces/
-│
 ├── scripts/
 │
 ├── .env

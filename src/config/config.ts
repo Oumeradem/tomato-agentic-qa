@@ -73,8 +73,8 @@ export const config: AppConfig = {
         ? 1
         : 0,
   workers: parseNumber(process.env.WORKERS, 1),
-  screenshot: oneOf(readEnv('SCREENSHOT', 'only-on-failure').toLowerCase(), supportedScreenshots, 'only-on-failure'),
-  video: oneOf(readEnv('VIDEO', 'off').toLowerCase(), supportedVideos, 'off'),
+  screenshot: oneOf(readEnv('SCREENSHOT', 'on').toLowerCase(), supportedScreenshots, 'on'),
+  video: oneOf(readEnv('VIDEO', 'on').toLowerCase(), supportedVideos, 'on'),
   trace: oneOf(readEnv('TRACE', 'on-first-retry').toLowerCase(), supportedTraces, 'on-first-retry'),
   username: readEnv('USERNAME', ''),
   password: readEnv('PASSWORD', ''),
