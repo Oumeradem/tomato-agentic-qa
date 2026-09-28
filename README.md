@@ -8,11 +8,30 @@
 ![Allure](https://img.shields.io/badge/Reporting-Allure-C8325F)
 ![AI Agents](https://img.shields.io/badge/AI-Cline%20Agents-7C3AED)
 
+[![Test Suite](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/test.yml/badge.svg)](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/test.yml)
+[![Smoke Tests](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/smoke.yml/badge.svg)](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/smoke.yml)
+[![Regression Tests](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/regression.yml/badge.svg)](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/regression.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node](https://img.shields.io/badge/Node-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+
 A **production-ready, enterprise-grade UI test automation framework** built with **Playwright**, **TypeScript**, and **Cucumber BDD** — extended with an **AI-agent orchestrator** that plans, generates, executes, heals, and reports on tests end-to-end.
 
 The application under test is [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app/), used to validate the framework against a real, live app.
 
 > **What makes this different:** beyond a clean POM + BDD setup, this repo ships a full **Cline AI-agent toolchain** (planner → test generator → executor → healer → git → Jira) so a feature request can go from a plain sentence to a passing, reported, and Jira-tracked test suite — with video and screenshot evidence for every scenario.
+
+## 📊 At a Glance
+
+| Metric          | Value                                                                        |
+| --------------- | ---------------------------------------------------------------------------- |
+| BDD scenarios   | **33** across **5** feature files (cart · login · ordering · navigation)     |
+| CI/CD pipelines | **3** GitHub Actions (Test · Smoke · Regression) + **Jenkins**               |
+| Environments    | `dev` · `qa` · `stage` · `prod`                                              |
+| Browsers        | Chromium · Firefox · WebKit                                                  |
+| AI agents       | **11** (orchestrator → planner → generator → executor → healer → git → Jira) |
+| Evidence/run    | Screenshot **and** video for **every** scenario, attached to the report      |
+| Reporting       | Allure + Cucumber HTML/JSON + console summary                                |
+| Quality gate    | `npm run verify` (lint + format + typecheck) + `verify:secrets`              |
 
 ---
 
@@ -132,6 +151,23 @@ project-root/
 ├── prettier.config.js
 ├── Jenkinsfile
 └── README.md
+```
+
+The end-to-end flow, from a feature request through the AI-agent pipeline to reported, Jira-tracked results:
+
+```mermaid
+flowchart TD
+    A["📝 Feature request / requirement"] --> P["🧠 planner-agent<br/>inspects the live UI & writes a test plan"]
+    P --> G["🛠️ test-generator-agent<br/>feature files + step defs + Page Objects"]
+    G --> R["▶️ Run suite<br/>Playwright + Cucumber (POM)"]
+    R --> H{"Pass?"}
+    H -- "No" --> HE["🔧 healer-agent<br/>reproduces, analyzes & fixes (max 3)"]
+    HE --> R
+    H -- "Yes" --> REP["📊 Allure + Cucumber report<br/>screenshot + video per scenario"]
+    REP --> JI["🐞 jira-import-agent<br/>import failed scenarios (de-dup)"]
+    REP --> JS["🔄 jira-status-agent<br/>sync issue statuses"]
+    R -. "triggered by" .-> CI["🔁 CI/CD<br/>GitHub Actions (test · smoke · regression) + Jenkins"]
+    CI --> REP
 ```
 
 ## Prerequisites
