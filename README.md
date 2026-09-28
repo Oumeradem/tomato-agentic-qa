@@ -51,6 +51,12 @@ The application under test is [Tomato Food Delivery](https://tomato-food-deliver
 
 ## 🖼️ Demo
 
+**Full framework demo** — watch the AI-agent orchestrator plan, generate, execute, and heal tests end-to-end against the live app:
+
+[![Tomato App - Agentic QA Framework Demo](https://img.youtube.com/vi/IBtQbzwBVxI/0.jpg)](https://youtu.be/IBtQbzwBVxI)
+
+---
+
 **View Menu** button test (planned → generated → executed through the agent orchestrator):
 
 | Home page (hero)                   | After clicking View Menu (scroll to menu) |
