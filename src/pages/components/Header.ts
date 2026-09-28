@@ -7,7 +7,7 @@ import { BaseComponent } from './BaseComponent';
  */
 export class Header extends BaseComponent {
   public constructor(page: Page) {
-    // The app renders the top navigation as div.navbar (no <header>/<nav> tags).
+    // The app renders the top navigation as div.navbar
     super(page, page.locator('div.navbar'));
   }
 
