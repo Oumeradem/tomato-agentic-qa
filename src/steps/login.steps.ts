@@ -108,7 +108,9 @@ When('I log in with valid credentials accepting the terms', async function (this
 });
 
 When('I click "Create a new account"', async function (this: CustomWorld): Promise<void> {
-  await this.pages.loginPage.createAccountLink.click();
+  // Use the resilient helper: the app's Login -> Sign Up toggle is intermittently
+  // missed on the first click (observed live), so goToSignUp() retries.
+  await this.pages.loginPage.goToSignUp();
 });
 
 When('I close the modal', async function (this: CustomWorld): Promise<void> {
