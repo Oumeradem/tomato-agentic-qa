@@ -88,13 +88,19 @@ export class LoginPage extends BasePage {
   }
 
   public async goToSignUp(): Promise<void> {
-    const signUpHeading = this.page.getByRole('heading', { name: 'Sign Up' });
+    // The "Your name" field is the first field of the Sign Up modal. Waiting for
+    // it (not just the modal heading) ensures the form is actually interactive —
+    // the heading renders before the fields, so waiting only on the heading races
+    // with the step assertion below.
+    const nameField = this.page.getByRole('textbox', { name: 'Your name' });
     // The app's Login -> Sign Up toggle is intermittently missed on the first
-    // click (observed live), so retry a bounded number of times.
+    // click (observed live), so retry a bounded number of times. CI runs 4
+    // parallel workers on a shared host and renders the modal slower than a
+    // local machine, so each attempt waits generously.
     for (let attempt = 0; attempt < 3; attempt += 1) {
       await this.createAccountLink.click();
       try {
-        await signUpHeading.waitFor({ state: 'visible', timeout: 2000 });
+        await nameField.waitFor({ state: 'visible', timeout: 5000 });
         return;
       } catch {
         // Toggle did not register on this attempt; click again.
