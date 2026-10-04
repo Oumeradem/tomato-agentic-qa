@@ -1,5 +1,5 @@
 @login
-Feature: Authentication (Login)
+Feature: Authentication (Login
 
   As a customer
   I want to sign in to my account
