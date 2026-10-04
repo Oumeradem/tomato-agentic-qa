@@ -1,9 +1,19 @@
-# Playwright + TypeScript + Cucumber BDD Framework
+# Tomato Agentic QA
 
-A **production-ready, enterprise-grade UI test automation framework** built with **Playwright**, **TypeScript**, and **Cucumber BDD**, featuring Allure + Cucumber reporting, Page Object Model, multi-environment configuration, CI/CD (GitHub Actions + Jenkins), and an AI-agent toolchain for Cline.
+An agentic test automation framework for the Tomato food delivery app. A planner agent and an orchestrator agent turn a plain-English request into a BDD test plan, run it with Playwright, and report the result.
 
-The reference application is [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app/) — the application under test used to validate the framework end-to-end.
+🎥 **Demo (under 3 min):** https://youtu.be/IBtQbzwBVxI
 
+## What it demonstrates
+
+- **Agent workflow:** planner and orchestrator agents (Cline) that plan, generate, run, and report tests
+- **BDD:** Cucumber with Gherkin scenarios that read like requirements
+- **Page Object Model:** TypeScript page objects composed through a central fixture
+- **Quality gates:** ESLint, Prettier, and strict TypeScript
+- **CI/CD:** GitHub Actions workflows and a Jenkinsfile
+- **Reporting:** Allure and Cucumber HTML reports, with screenshots and traces captured on failure
+
+**App under test:** [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app)
 ---
 
 ## Table of Contents
