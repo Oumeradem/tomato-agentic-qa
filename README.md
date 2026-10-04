@@ -286,3 +286,60 @@ npm run jira:status -- QA-123 "In Progress"
 ```
 
 Environment: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, optional `JIRA_ISSUE_TYPE` (default Bug).
+
+
+---
+
+## Cline AI Agents, Skills & Rules
+
+This repository ships a complete Cline toolchain to let AI agents plan, generate, heal, run, and report on tests safely.
+
+### Agents (`.cline/agents/`)
+
+| Agent                                 | Responsibility                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `planner/planner-agent`               | Converts requirements into structured BDD test plans; inspects the live UI first           |
+| `test-generator/test-generator-agent` | Turns plans into feature files, step definitions, and Page Objects (reusing existing ones) |
+| `healer/healer-agent`                 | Diagnoses and fixes failing tests — max 3 attempts, then escalates                         |
+| `git/commit-agent`                    | Reviews diffs, blocks secrets, creates Conventional Commits                                |
+| `git/branch-agent`                    | Creates correctly named branches; never works on `main` unapproved                         |
+| `git/push-agent`                      | Pushes only with explicit approval                                                         |
+| `git/pr-agent`                        | Drafts pull requests with real test results and report links                               |
+| `jira-import/jira-import-agent`       | Imports BDD scenarios into Jira after de-duplication                                       |
+| `jira-status/jira-status-agent`       | Syncs Jira statuses from the latest report (never PASS on FAIL)                            |
+
+### Skills (`.cline/skills/`)
+
+`playwright`, `cucumber`, `page-object-model`, `test-design`, `test-healing`, `git`, `jira`, `reporting`, `environment-management`.
+
+### Workflows (`.cline/workflows/`)
+
+- `create-test.md` — plan → generate → run → verify
+- `heal-test.md` — reproduce → analyze → fix (max 3) → validate
+- `jira-import.md` — dry-run first, then import
+- `jira-status-update.md` — update statuses from the latest report
+
+### Rules (`.clinerules/`)
+
+`architecture`, `coding-standards`, `playwright-rules`, `cucumber-rules`, `locator-rules`, `environment-rules`, `git-rules`, `agent-rules`, `security-rules`, `approval-rules`.
+
+## Best Practices
+
+- **Locators**: role → label → placeholder → text → `data-test` → stable CSS → XPath (last resort). The framework registers `data-test` as the Playwright test-id attribute because the reference app uses `data-test`, not `data-testid`.
+- **No arbitrary waits** — rely on Playwright auto-waiting and assertions.
+- **Isolation** — a fresh `BrowserContext`/`Page` per scenario; scenarios never depend on each other.
+- **Step definitions are thin** — business logic lives in Page Objects.
+- **Secrets** — only in `.env`/CI secret stores; run `npm run verify:secrets` before committing.
+- **Quality gate** — run `npm run verify` before finishing any task.
+
+## Troubleshooting
+
+| Symptom                             | Likely fix                                                                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `getByTestId` can't find elements   | The app may use `data-test` (registered globally). Use `data-test` attributes.                                                            |
+| Tests fail only in CI               | Credentials missing — add GitHub Secrets / Jenkins Credentials and run `prepare-env`.                                                     |
+| `npx playwright install` needed     | Install the browser for the machine: `npx playwright install chromium`.                                                                   |
+| Allure CLI unknown syntax error     | Use the new syntax: `allure generate ./reports/allure-results --output ./reports/allure-report` (the `report:allure` script already does). |
+| Parallel flakiness                  | Lower `WORKERS`, ensure scenarios are isolated (fresh context per scenario).                                                              |
+| Step ambiguous                      | Two step definitions match the same text — consolidate with parameterized steps.                                                          |
+| Secrets flagged by `verify:secrets` | Remove the real value or add a precise ignore in `scripts/verify-secrets.js`.                                                             |
