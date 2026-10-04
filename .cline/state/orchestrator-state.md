@@ -1,36 +1,31 @@
 # Orchestrator State
 
-Workflow: Ordering Journey (create-test)
+Workflow: Login Suite Test Execution (run-login)
 
 Status: Completed
 
 Current Agent: (none)
 
-Completed Agents: planner-agent, test-generator-agent, test-execution-agent, commit-agent, push-agent, pr-agent
+Completed Agents: test-execution-agent
 
 Next Agent: (none)
 
 Approval Required: false
 
-Test Status: PASSED — 1/1 scenarios, 2/2 steps, 0 failures (@ordering)
+Test Status: PASSED — 8/8 scenarios, 55/55 steps, 0 failures (@login, ENV=qa)
 
 Healing Attempts: 0
 
 Modified Files:
-.cline/plans/ordering-journey-plan.md (created)
-features/ordering/ordering.feature (created)
-src/steps/ordering.steps.ts (created)
-src/pages/OrderPage.ts (created)
-src/pages/CartPage.ts (added proceedToCheckout)
-src/fixtures/pages.ts (registered OrderPage)
+none (execution only — reports regenerated under reports/)
 
 Current Branch: chore/clean-fresh-start
 
-Commit Status: committed — 21f0d7e
+Commit Status: committed — eb51cee (fix: wait for Sign Up form fields before returning from goToSignUp)
 
-Push Status: pushed — 21f0d7e on origin/chore/clean-fresh-start (in sync)
+Push Status: pushed — eb51cee on origin/chore/clean-fresh-start (in sync)
 
-PR Status: PR #1 OPEN — "test: add cart and ordering journey suites (MenuPage/CartPage/OrderPage)"
+PR Status: PR #40 OPEN — flaky Sign Up modal fix (see PR notes)
 
 Jira Status: not applicable
 
@@ -38,12 +33,13 @@ Errors and Blockers: none
 
 ---
 
-## Ordering Journey Notes
+## Login Suite Notes (2026-10-04T09:30Z)
 
-- **Automated coverage**: 1 regression scenario (failed/cancelled payment redirects home) — reliably automatable, PASSED.
-- **Manual / Stripe-sandbox verification**: card entry (deeply-nested cross-origin iframes + hCaptcha) and the /myorders confirmation page (only renders for real backend-verified orders) are documented in the feature file as manual verification steps.
-- **Locator fix**: app buttons lack role attributes; use locator('button').filter({ hasText }) instead of getByRole.
-- **Diagnostic scripts** (test-checkout-button.js / test-buttons.js) created during root-causing and removed before commit.
+- Ran `@login` tag (features/login/login.feature), ENV=qa, chromium headless, 1 worker.
+- Pre-flight `--dry-run --tags '@login'` passed (no undefined/ambiguous steps).
+- 8/8 scenarios passed, 55/55 steps passed, 0 failures — verdict PASS, no healer required.
+- Includes the previously flaky scenario "Create a new account link opens the Sign Up modal" — PASSED.
+- Summary persisted in `.cline/state/last-run-summary.md`.
 
 ## Portfolio Status
 
