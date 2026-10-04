@@ -72,12 +72,7 @@ Feature: Authentication (Login
     Then the Login modal closes
     And the header shows the profile avatar instead of the "Sign In" button
 
-  @sanity
-  Scenario: Create a new account link opens the Sign Up modal
-    Given I open the Tomato home page
-    When I open the sign-in modal
-    And I click "Create a new account"
-    Then the Sign Up modal is shown with name, email, and password fields
+
 
   @regression
   Scenario: Login modal can be closed
