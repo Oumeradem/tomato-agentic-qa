@@ -32,3 +32,4 @@ yarn.lock
 
 # Gherkin feature files (formatted by convention, not Prettier)
 **/*.feature
+tmp/

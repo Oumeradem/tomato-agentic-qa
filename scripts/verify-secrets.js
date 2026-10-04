@@ -99,9 +99,6 @@ const EXCLUDE_DIRS = new Set([
   'allure-report',
   'playwright-report',
   'test-results',
-  'screenshots',
-  'videos',
-  'traces',
   '.github',
 ]);
 const EXCLUDE_FILES = new Set(['.env', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock']);

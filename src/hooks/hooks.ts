@@ -7,11 +7,16 @@ import {
   Status,
   setDefaultTimeout,
 } from '@cucumber/cucumber';
-import { Browser, chromium, firefox, webkit } from '@playwright/test';
+import { Browser, BrowserContextOptions, chromium, firefox, webkit } from '@playwright/test';
 import { config } from '../config/config';
 import { CustomWorld } from '../support/world';
 import { BrowserName } from '../types';
-import { captureFailureArtifacts } from '../utils/artifact-manager';
+import {
+  captureFailureArtifacts,
+  capturePassScreenshot,
+  saveOrDiscardVideo,
+  videoRecordingsDir,
+} from '../utils/artifact-manager';
 import { logger } from '../utils/logger';
 
 setDefaultTimeout(config.timeout);
@@ -54,10 +59,14 @@ Before(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Pro
     throw new Error('Browser was not launched in BeforeAll');
   }
 
-  this.context = await browser.newContext({
+  const contextOptions: BrowserContextOptions = {
     baseURL: config.baseUrl,
     viewport: { width: 1280, height: 720 },
-  });
+  };
+  if (config.video !== 'off') {
+    contextOptions.recordVideo = { dir: videoRecordingsDir(), size: { width: 1280, height: 720 } };
+  }
+  this.context = await browser.newContext(contextOptions);
   this.page = await this.context.newPage();
 
   if (config.trace !== 'off') {
@@ -79,8 +88,10 @@ Before(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Pro
 
 After(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Promise<void> {
   const status = scenario.result?.status;
+  const isFailed = status === Status.FAILED;
+  const video = this.page.video();
 
-  if (status === Status.FAILED) {
+  if (isFailed) {
     logger.error('Scenario failed', { scenario: this.scenario.name, error: scenario.result?.message });
     await captureFailureArtifacts(
       this,
@@ -90,6 +101,8 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Prom
       scenario.result?.message,
       this.consoleErrors,
     );
+  } else if (config.screenshot === 'on') {
+    await capturePassScreenshot(this, this.page, this.scenario.name);
   }
 
   if (this.context) {
@@ -97,6 +110,9 @@ After(async function (this: CustomWorld, scenario: ITestCaseHookParameter): Prom
       logger.warn('Failed to close browser context', { error: String(error) });
     });
   }
+
+  // Finalize the recording (if any) now that the context is closed.
+  await saveOrDiscardVideo(video, this.scenario.name, config.video, isFailed);
 
   logger.info('Scenario finished', { scenario: this.scenario.name, status });
 });
