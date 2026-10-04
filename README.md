@@ -1,12 +1,12 @@
 # 🍅 Tomato Agentic QA — Playwright + Cucumber BDD Automation Framework
 
-![Cucumber](https://img.shields.io/badge/Cucumber-23D96C?logo=cucumber&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
-![Jenkins](https://img.shields.io/badge/CI-Jenkins-D24939?logo=jenkins&logoColor=white)
-![Allure](https://img.shields.io/badge/Reporting-Allure-C8325F)
-![AI Agents](https://img.shields.io/badge/AI-Cline%20Agents-7C3AED)
+[![Cucumber](https://img.shields.io/badge/Cucumber-23D96C?logo=cucumber&logoColor=white)](https://cucumber.io)
+[![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](https://github.com/Oumeradem/tomato-agentic-qa/actions)
+[![Jenkins](https://img.shields.io/badge/CI-Jenkins-D24939?logo=jenkins&logoColor=white)](https://www.jenkins.io)
+[![Allure](https://img.shields.io/badge/Reporting-Allure-C8325F)](https://allurereport.org)
+[![AI Agents](https://img.shields.io/badge/AI-Cline%20Agents-7C3AED)](https://cline.bot)
 
 [![Test Suite](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/test.yml/badge.svg)](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/test.yml)
 [![Smoke Tests](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/smoke.yml/badge.svg)](https://github.com/Oumeradem/tomato-agentic-qa/actions/workflows/smoke.yml)
