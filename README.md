@@ -14,6 +14,7 @@ An agentic test automation framework for the Tomato food delivery app. A planner
 - **Reporting:** Allure and Cucumber HTML reports, with screenshots and traces captured on failure
 
 **App under test:** [Tomato Food Delivery](https://tomato-food-delivery-zeta.vercel.app)
+
 ---
 
 ## Table of Contents
@@ -91,7 +92,9 @@ project-root/
 │   ├── pages/                   # Page Object Model
 │   │   ├── BasePage.ts
 │   │   ├── LoginPage.ts
-│   │   ├── InventoryPage.ts
+│   │   ├── MenuPage.ts
+│   │   ├── CartPage.ts
+│   │   ├── OrderPage.ts
 │   │   └── components/Header.ts
 │   ├── steps/                   # Cucumber step definitions
 │   ├── hooks/                   # BeforeAll/Before/After hooks + browser lifecycle
@@ -286,7 +289,6 @@ npm run jira:status -- QA-123 "In Progress"
 ```
 
 Environment: `JIRA_BASE_URL`, `JIRA_EMAIL`, `JIRA_API_TOKEN`, `JIRA_PROJECT`, optional `JIRA_ISSUE_TYPE` (default Bug).
-
 
 ---
 
