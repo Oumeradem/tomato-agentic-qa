@@ -27,3 +27,5 @@ npm-debug.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
+traces/
+videos/
