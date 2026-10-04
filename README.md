@@ -1,4 +1,4 @@
-# 🍅 Tomato Agentic QA — Playwright + Cucumber BDD Automation Framework
+# 🍅 Tomato Agentic QA - Playwright + Cucumber BDD Automation Framework
 
 [![Cucumber](https://img.shields.io/badge/Cucumber-23D96C?logo=cucumber&logoColor=white)](https://cucumber.io)
 [![Playwright](https://img.shields.io/badge/Playwright-2EAD33?logo=playwright&logoColor=white)](https://playwright.dev)
