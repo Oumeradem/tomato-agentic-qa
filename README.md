@@ -63,8 +63,6 @@ The application under test is [Tomato Food Delivery](https://tomato-food-deliver
 | ---------------------------------- | ----------------------------------------- |
 | ![Home](docs/assets/demo-home.png) | ![Scroll](docs/assets/demo-scroll.png)    |
 
-
-
 ## 🧰 Tech Stack
 
 | Layer        | Technology                                            |
